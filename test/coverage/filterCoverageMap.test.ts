@@ -1,8 +1,9 @@
 import { describe, it, expect } from 'vitest'
+import { createCoverageMap } from 'istanbul-lib-coverage'
 import { filterCoverageMap } from '../../src/coverage/filterCoverageMap.js'
 
 describe('filterCoverageMap', () => {
-  const createMockCoverageMap = () => ({
+  const createMockCoverageMap = () => createCoverageMap({
     '/project/src/index.ts': {
       path: '/project/src/index.ts',
       statementMap: {},
@@ -56,13 +57,13 @@ describe('filterCoverageMap', () => {
 
     const result = filterCoverageMap(coverageMap, excludePatterns)
 
-    expect(Object.keys(result)).toEqual([
+    expect(Object.keys(result.toJSON())).toEqual([
       '/project/src/index.ts',
       '/project/src/utils.ts',
       '/project/test/setup.ts',
       '/project/__tests__/integration.test.ts'
     ])
-    expect(result['/project/src/components/Button.spec.ts']).toBeUndefined()
+    expect(result.toJSON()['/project/src/components/Button.spec.ts']).toBeUndefined()
   })
 
   it('should filter out files matching **/__tests__/** pattern', () => {
@@ -71,13 +72,13 @@ describe('filterCoverageMap', () => {
 
     const result = filterCoverageMap(coverageMap, excludePatterns)
 
-    expect(Object.keys(result)).toEqual([
+    expect(Object.keys(result.toJSON())).toEqual([
       '/project/src/index.ts',
       '/project/src/utils.ts',
       '/project/src/components/Button.spec.ts',
       '/project/test/setup.ts'
     ])
-    expect(result['/project/__tests__/integration.test.ts']).toBeUndefined()
+    expect(result.toJSON()['/project/__tests__/integration.test.ts']).toBeUndefined()
   })
 
   it('should apply multiple exclude patterns', () => {
@@ -86,13 +87,13 @@ describe('filterCoverageMap', () => {
 
     const result = filterCoverageMap(coverageMap, excludePatterns)
 
-    expect(Object.keys(result)).toEqual([
+    expect(Object.keys(result.toJSON())).toEqual([
       '/project/src/index.ts',
       '/project/src/utils.ts',
       '/project/__tests__/integration.test.ts'
     ])
-    expect(result['/project/src/components/Button.spec.ts']).toBeUndefined()
-    expect(result['/project/test/setup.ts']).toBeUndefined()
+    expect(result.toJSON()['/project/src/components/Button.spec.ts']).toBeUndefined()
+    expect(result.toJSON()['/project/test/setup.ts']).toBeUndefined()
   })
 
   it('should return original map when no patterns provided', () => {
@@ -101,7 +102,7 @@ describe('filterCoverageMap', () => {
 
     const result = filterCoverageMap(coverageMap, excludePatterns)
 
-    expect(result).toEqual(coverageMap)
+    expect(result.toJSON()).toEqual(coverageMap.toJSON())
   })
 
   it('should return original map when patterns is undefined', () => {
@@ -109,7 +110,7 @@ describe('filterCoverageMap', () => {
 
     const result = filterCoverageMap(coverageMap, undefined)
 
-    expect(result).toEqual(coverageMap)
+    expect(result.toJSON()).toEqual(coverageMap.toJSON())
   })
 
   it('should handle patterns that do not match any files', () => {
@@ -118,15 +119,15 @@ describe('filterCoverageMap', () => {
 
     const result = filterCoverageMap(coverageMap, excludePatterns)
 
-    expect(result).toEqual(coverageMap)
+    expect(result.toJSON()).toEqual(coverageMap.toJSON())
   })
 
   it('should handle empty coverage map', () => {
-    const coverageMap = {}
+    const coverageMap = createCoverageMap({})
     const excludePatterns = ['**/*.spec.ts']
 
     const result = filterCoverageMap(coverageMap, excludePatterns)
 
-    expect(result).toEqual({})
+    expect(result.toJSON()).toEqual({})
   })
 })
