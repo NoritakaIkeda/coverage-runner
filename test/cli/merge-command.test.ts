@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
 import { mergeCoverageFiles } from '../../src/commands/mergeCoverage';
+import { FileCoverageData } from 'istanbul-lib-coverage';
 
 describe('CLI Merge Command', () => {
   const testDir = path.join(__dirname, '../fixtures/cli-test');
@@ -73,7 +74,7 @@ end_of_record`;
     expect(fs.existsSync(lcovFile)).toBe(true);
 
     // Verify content
-    const mergedJson = JSON.parse(fs.readFileSync(jsonFile, 'utf-8'));
+    const mergedJson = JSON.parse(fs.readFileSync(jsonFile, 'utf-8')) as Record<string, FileCoverageData>;
     const fileKeys = Object.keys(mergedJson);
     expect(fileKeys.length).toBe(2);
     expect(fileKeys.some(key => key.includes('app.ts'))).toBe(true);
@@ -106,7 +107,7 @@ end_of_record`;
     expect(result.success).toBe(true);
     expect(result.filesProcessed).toBeGreaterThanOrEqual(2);
     
-    const mergedJson = JSON.parse(fs.readFileSync(path.join(outputDir, 'coverage-merged.json'), 'utf-8'));
+    const mergedJson = JSON.parse(fs.readFileSync(path.join(outputDir, 'coverage-merged.json'), 'utf-8')) as Record<string, FileCoverageData>;
     const fileKeys = Object.keys(mergedJson);
     
     // Should have normalized the paths - either 1 or 2 files depending on how the normalization worked

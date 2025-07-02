@@ -1,11 +1,10 @@
-import * as fs from 'fs';
 import * as path from 'path';
 import { glob } from 'glob';
 import { logger } from '../utils/logger';
 import { loadLcov } from '../coverage/loaders/loadLcov';
 import { loadCobertura } from '../coverage/loaders/loadCobertura';
 import { loadIstanbulJson } from '../coverage/loaders/loadIstanbulJson';
-import { mergeCoverage } from '../coverage/mergeCoverage';
+import { mergeCoverage, CoverageData } from '../coverage/mergeCoverage';
 import { normalizeCoveragePaths } from '../coverage/normalizeCoveragePaths';
 import { writeMergedCoverage } from '../coverage/writeMergedCoverage';
 
@@ -59,7 +58,7 @@ export async function mergeCoverageFiles(options: MergeCoverageOptions): Promise
     logger.debug(`Found ${uniqueFiles.length} unique coverage files`);
     
     // Load all coverage files
-    const coverageData: any[] = [];
+    const coverageData: CoverageData[] = [];
     let filesProcessed = 0;
     
     for (const filePath of uniqueFiles) {
@@ -84,8 +83,8 @@ export async function mergeCoverageFiles(options: MergeCoverageOptions): Promise
           continue;
         }
         
-        if (coverageMap && Object.keys(coverageMap.data).length > 0) {
-          coverageData.push(coverageMap.data);
+        if (coverageMap && Object.keys(coverageMap.toJSON()).length > 0) {
+          coverageData.push(coverageMap.toJSON());
           filesProcessed++;
           logger.debug(`Successfully loaded coverage from: ${filePath}`);
         } else {
@@ -118,21 +117,21 @@ export async function mergeCoverageFiles(options: MergeCoverageOptions): Promise
     // Apply path normalization if requested
     if (normalizePaths) {
       logger.debug('Applying path normalization...');
-      const originalPathCount = Object.keys(mergedCoverage.data).length;
+      const originalPathCount = Object.keys(mergedCoverage.toJSON()).length;
       mergedCoverage = normalizeCoveragePaths(mergedCoverage, rootDir);
-      const newPathCount = Object.keys(mergedCoverage.data).length;
+      const newPathCount = Object.keys(mergedCoverage.toJSON()).length;
       normalizedPathCount = originalPathCount - newPathCount;
       logger.debug(`Path normalization reduced ${originalPathCount} paths to ${newPathCount} unique paths`);
     }
     
     // Write merged coverage
     logger.debug('Writing merged coverage...');
-    await writeMergedCoverage(mergedCoverage, {
+    writeMergedCoverage(mergedCoverage, {
       outDir: outputDir,
       jsonOnly,
     });
     
-    const uniqueFileCount = Object.keys(mergedCoverage.data).length;
+    const uniqueFileCount = Object.keys(mergedCoverage.toJSON()).length;
     
     logger.debug('Coverage merge operation completed successfully');
     

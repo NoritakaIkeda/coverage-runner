@@ -7,6 +7,7 @@ import { loadIstanbulJson } from '../../src/coverage/loaders/loadIstanbulJson';
 import { mergeCoverage } from '../../src/coverage/mergeCoverage';
 import { normalizeCoveragePaths } from '../../src/coverage/normalizeCoveragePaths';
 import { writeMergedCoverage } from '../../src/coverage/writeMergedCoverage';
+import { FileCoverageData } from 'istanbul-lib-coverage';
 
 describe('E2E Coverage Merging Integration', () => {
   const testDir = path.join(__dirname, '../fixtures/e2e');
@@ -111,7 +112,7 @@ end_of_record`;
     }
   });
 
-  it('should perform complete E2E coverage merging workflow', async () => {
+  it('should perform complete E2E coverage merging workflow', () => {
     // Act: Load different coverage formats
     const lcovCoverage = loadLcov(path.join(coverageDir, 'coverage.lcov'));
     const coberturaCoverage = loadCobertura(path.join(coverageDir, 'coverage.xml'));
@@ -119,16 +120,16 @@ end_of_record`;
 
     // Merge all coverage data
     const mergedCoverage = mergeCoverage([
-      lcovCoverage.data,
-      coberturaCoverage.data,
-      istanbulCoverage.data,
+      lcovCoverage.toJSON(),
+      coberturaCoverage.toJSON(),
+      istanbulCoverage.toJSON(),
     ]);
 
     // Normalize paths to handle different formats
     const normalizedCoverage = normalizeCoveragePaths(mergedCoverage);
 
     // Write merged coverage
-    await writeMergedCoverage(normalizedCoverage, { outDir: outputDir });
+    writeMergedCoverage(normalizedCoverage, { outDir: outputDir });
 
     // Assert: Check that output files are created
     const jsonFile = path.join(outputDir, 'coverage-merged.json');
@@ -138,7 +139,7 @@ end_of_record`;
     expect(fs.existsSync(lcovFile)).toBe(true);
 
     // Verify JSON content contains all files
-    const mergedJsonContent = JSON.parse(fs.readFileSync(jsonFile, 'utf-8'));
+    const mergedJsonContent = JSON.parse(fs.readFileSync(jsonFile, 'utf-8')) as Record<string, FileCoverageData>;
     const fileKeys = Object.keys(mergedJsonContent);
 
     // Should have files from all sources, with path normalization
@@ -155,8 +156,8 @@ end_of_record`;
     const calculatorCoverage = mergedJsonContent[calculatorFile!];
     // Should have statement hits from both sources, but path normalization may have merged differently
     // Let's check that we have coverage data
-    expect(calculatorCoverage.s).toBeDefined();
-    expect(Object.keys(calculatorCoverage.s).length).toBeGreaterThan(0);
+    expect(calculatorCoverage?.s).toBeDefined();
+    expect(Object.keys(calculatorCoverage?.s || {}).length).toBeGreaterThan(0);
 
     // Verify LCOV content is generated
     const lcovContent = fs.readFileSync(lcovFile, 'utf-8');
@@ -165,7 +166,7 @@ end_of_record`;
     expect(lcovContent).toContain('end_of_record');
   });
 
-  it('should handle path normalization during E2E workflow', async () => {
+  it('should handle path normalization during E2E workflow', () => {
     // Arrange: Create coverage files with different path formats for same file
     const lcovWithRelativePath = `TN:
 SF:src/shared.ts
@@ -200,26 +201,28 @@ end_of_record`;
     const lcovCoverage = loadLcov(path.join(coverageDir, 'relative.lcov'));
     const istanbulCoverage = loadIstanbulJson(path.join(coverageDir, 'dotslash.json'));
 
-    const mergedCoverage = mergeCoverage([lcovCoverage.data, istanbulCoverage.data]);
+    const mergedCoverage = mergeCoverage([lcovCoverage.toJSON(), istanbulCoverage.toJSON()]);
     const normalizedCoverage = normalizeCoveragePaths(mergedCoverage);
 
-    await writeMergedCoverage(normalizedCoverage, { outDir: outputDir });
+    writeMergedCoverage(normalizedCoverage, { outDir: outputDir });
 
     // Assert: Should have only one file entry for shared.ts despite different path formats
     const jsonFile = path.join(outputDir, 'coverage-merged.json');
-    const mergedJsonContent = JSON.parse(fs.readFileSync(jsonFile, 'utf-8'));
+    const mergedJsonContent = JSON.parse(fs.readFileSync(jsonFile, 'utf-8')) as Record<string, FileCoverageData>;
     const fileKeys = Object.keys(mergedJsonContent);
 
     expect(fileKeys.length).toBe(1);
     expect(fileKeys[0]).toContain('shared.ts');
 
     // Should have merged hit counts (2 + 3 = 5)
-    const sharedFile = mergedJsonContent[fileKeys[0]!];
-    expect(sharedFile.s['0']).toBe(5);
-    expect(sharedFile.s['1']).toBe(5);
+    const firstFileKey = fileKeys[0];
+    expect(firstFileKey).toBeDefined();
+    const sharedFile = mergedJsonContent[firstFileKey!];
+    expect(sharedFile?.s['0']).toBe(5);
+    expect(sharedFile?.s['1']).toBe(5);
   });
 
-  it('should handle empty coverage files gracefully', async () => {
+  it('should handle empty coverage files gracefully', () => {
     // Arrange: Create empty coverage files
     fs.writeFileSync(path.join(coverageDir, 'empty.lcov'), '');
     fs.writeFileSync(path.join(coverageDir, 'empty.json'), '{}');
@@ -228,10 +231,10 @@ end_of_record`;
     const lcovCoverage = loadLcov(path.join(coverageDir, 'empty.lcov'));
     const istanbulCoverage = loadIstanbulJson(path.join(coverageDir, 'empty.json'));
 
-    const mergedCoverage = mergeCoverage([lcovCoverage.data, istanbulCoverage.data]);
+    const mergedCoverage = mergeCoverage([lcovCoverage.toJSON(), istanbulCoverage.toJSON()]);
     const normalizedCoverage = normalizeCoveragePaths(mergedCoverage);
 
-    await writeMergedCoverage(normalizedCoverage, { outDir: outputDir });
+    writeMergedCoverage(normalizedCoverage, { outDir: outputDir });
 
     // Assert: Should create output files even with empty input
     const jsonFile = path.join(outputDir, 'coverage-merged.json');
@@ -240,11 +243,11 @@ end_of_record`;
     expect(fs.existsSync(jsonFile)).toBe(true);
     expect(fs.existsSync(lcovFile)).toBe(true);
 
-    const mergedJsonContent = JSON.parse(fs.readFileSync(jsonFile, 'utf-8'));
+    const mergedJsonContent = JSON.parse(fs.readFileSync(jsonFile, 'utf-8')) as Record<string, FileCoverageData>;
     expect(Object.keys(mergedJsonContent)).toHaveLength(0);
   });
 
-  it('should preserve accurate coverage metrics across all formats', async () => {
+  it('should preserve accurate coverage metrics across all formats', () => {
     // Arrange: Create coverage with specific metrics to verify accuracy
     // Use the same statement IDs to ensure proper merging
     const preciseLcov = `TN:
@@ -282,26 +285,26 @@ end_of_record`;
     const lcovCoverage = loadLcov(path.join(coverageDir, 'precise.lcov'));
     const istanbulCoverage = loadIstanbulJson(path.join(coverageDir, 'precise.json'));
 
-    const mergedCoverage = mergeCoverage([lcovCoverage.data, istanbulCoverage.data]);
+    const mergedCoverage = mergeCoverage([lcovCoverage.toJSON(), istanbulCoverage.toJSON()]);
     const normalizedCoverage = normalizeCoveragePaths(mergedCoverage);
 
-    await writeMergedCoverage(normalizedCoverage, { outDir: outputDir });
+    writeMergedCoverage(normalizedCoverage, { outDir: outputDir });
 
     // Assert: Verify that data is properly preserved
     const jsonFile = path.join(outputDir, 'coverage-merged.json');
-    const mergedJsonContent = JSON.parse(fs.readFileSync(jsonFile, 'utf-8'));
+    const mergedJsonContent = JSON.parse(fs.readFileSync(jsonFile, 'utf-8')) as Record<string, FileCoverageData>;
     
     const preciseFile = mergedJsonContent['src/precise.ts'];
     expect(preciseFile).toBeDefined();
     
     // Verify we have statement coverage data
-    expect(preciseFile.s).toBeDefined();
-    expect(Object.keys(preciseFile.s).length).toBeGreaterThan(0);
+    expect(preciseFile?.s).toBeDefined();
+    expect(Object.keys(preciseFile?.s || {}).length).toBeGreaterThan(0);
     
     // Verify path is preserved
-    expect(preciseFile.path).toBe('src/precise.ts');
+    expect(preciseFile?.path).toBe('src/precise.ts');
     
     // Verify statement map is preserved
-    expect(preciseFile.statementMap).toBeDefined();
+    expect(preciseFile?.statementMap).toBeDefined();
   });
 });
