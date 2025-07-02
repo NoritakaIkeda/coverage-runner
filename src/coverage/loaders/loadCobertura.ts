@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-explicit-any */
- 
+
 import * as fs from 'fs';
 import istanbulLibCoverage from 'istanbul-lib-coverage';
 import * as xml2js from 'xml2js';

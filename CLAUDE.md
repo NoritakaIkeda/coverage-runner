@@ -34,6 +34,7 @@ When implementing new features, follow Test-Driven Development practices:
 ### Code Quality
 
 - Always run tests and linting before completing tasks
+- Run `npm run format` or `npx prettier --write` to format code before committing
 - Follow existing code patterns and conventions
 - Ensure comprehensive test coverage
 - Handle errors properly with appropriate type casting

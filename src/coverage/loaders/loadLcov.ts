@@ -1,4 +1,3 @@
- 
 import * as fs from 'fs';
 import istanbulLibCoverage from 'istanbul-lib-coverage';
 import { logger } from '../../utils/logger.js';
