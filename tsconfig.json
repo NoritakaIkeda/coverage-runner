@@ -25,7 +25,8 @@
   "include": [
     "src/**/*",
     "bin/**/*",
-    "test/**/*"
+    "test/**/*",
+    "vitest.config.ts"
   ],
   "exclude": [
     "node_modules",
