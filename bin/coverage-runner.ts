@@ -3,6 +3,8 @@
 import { Command } from 'commander';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { setDebugMode } from '../src/utils/logger';
+import { detectRunners } from '../src/utils/detectRunners';
 
 function getVersion(): string {
   try {
@@ -21,7 +23,27 @@ function createCLI(): Command {
   program
     .name('coverage-runner')
     .description('A tool for running and managing code coverage analysis')
-    .version(getVersion());
+    .version(getVersion())
+    .option('-d, --debug', 'enable debug output');
+
+  // Add detect command
+  program
+    .command('detect')
+    .description('Detect test runners in the current project')
+    .option('-p, --path <path>', 'path to package.json file')
+    .action((options: { path?: string }) => {
+      if (program.opts().debug) {
+        setDebugMode(true);
+      }
+
+      const runners = detectRunners(options.path);
+
+      if (runners.length > 0) {
+        console.log(`Detected test runners: ${runners.join(', ')}`);
+      } else {
+        console.log('No test runners detected');
+      }
+    });
 
   // Future subcommands will be added here
   // Example structure for extensibility:
