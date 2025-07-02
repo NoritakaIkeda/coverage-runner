@@ -1,9 +1,20 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { CoverageMap } from 'istanbul-lib-coverage';
+import { CoverageMap, FileCoverageData } from 'istanbul-lib-coverage';
 import { createContext } from 'istanbul-lib-report';
 import { create } from 'istanbul-reports';
 import { logger } from '../utils/logger';
+
+// Type guard to check if coverage data is FileCoverageData
+function isFileCoverageData(data: unknown): data is FileCoverageData {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    'path' in data &&
+    'statementMap' in data &&
+    's' in data
+  );
+}
 
 export interface WriteMergedCoverageOptions {
   outDir: string;
@@ -25,14 +36,14 @@ export function writeMergedCoverage(
 
   // Write JSON file
   const jsonFile = path.join(outDir, 'coverage-merged.json');
-  const jsonData = JSON.stringify(coverageMap.data, null, 2);
+  const jsonData = JSON.stringify(coverageMap.toJSON(), null, 2);
   fs.writeFileSync(jsonFile, jsonData);
   logger.debug(`Written JSON coverage: ${jsonFile}`);
 
   // Write LCOV file unless jsonOnly is specified
   if (!jsonOnly) {
     const lcovFile = path.join(outDir, 'coverage-merged.lcov');
-    
+
     try {
       // Create istanbul report context with coverage map
       const context = createContext({
@@ -56,24 +67,33 @@ export function writeMergedCoverage(
       logger.debug(`Written LCOV coverage: ${lcovFile}`);
     } catch {
       // Fallback: write simple LCOV format manually
-      logger.debug('Failed to use istanbul reports, writing simple LCOV format');
+      logger.debug(
+        'Failed to use istanbul reports, writing simple LCOV format'
+      );
       let lcovContent = '';
-      
-      for (const filePath of Object.keys(coverageMap.data)) {
-        const fileCoverage = coverageMap.data[filePath];
+
+      const coverageData = coverageMap.toJSON();
+      for (const filePath of Object.keys(coverageData)) {
+        const fileCoverage = coverageData[filePath];
+        if (!isFileCoverageData(fileCoverage)) {
+          continue;
+        }
+
         lcovContent += `TN:\nSF:${filePath}\n`;
-        
+
         // Add line data
-        for (const [statementId, hits] of Object.entries(fileCoverage.s || {})) {
+        for (const [statementId, hits] of Object.entries(
+          fileCoverage.s || {}
+        )) {
           const statement = fileCoverage.statementMap?.[statementId];
           if (statement) {
-            lcovContent += `DA:${statement.start.line},${hits}\n`;
+            lcovContent += `DA:${statement.start.line},${String(hits)}\n`;
           }
         }
-        
+
         lcovContent += 'end_of_record\n';
       }
-      
+
       fs.writeFileSync(lcovFile, lcovContent);
       logger.debug(`Written fallback LCOV coverage: ${lcovFile}`);
     }

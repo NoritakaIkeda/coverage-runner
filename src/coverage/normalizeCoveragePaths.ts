@@ -20,7 +20,7 @@ export function normalizeCoveragePaths(
   // Group paths by their normalized form
   for (const filePath of Object.keys(coverageMap.data)) {
     const normalizedPath = normalizePath(filePath, rootDir);
-    
+
     if (!pathGroups.has(normalizedPath)) {
       pathGroups.set(normalizedPath, []);
     }
@@ -32,44 +32,68 @@ export function normalizeCoveragePaths(
     if (originalPaths.length === 1) {
       // Single file, just add with normalized path
       const originalFileCoverage = coverageMap.data[originalPaths[0]];
-      const actualData = (originalFileCoverage as any).data || originalFileCoverage;      const normalizedFileCoverage = { ...actualData } as any;
+      const actualData =
+        (originalFileCoverage as any).data || originalFileCoverage;
+      const normalizedFileCoverage = { ...actualData } as any;
       normalizedFileCoverage.path = normalizedPath;
-      
+
       // Create a temporary coverage map with this single file
-      const tempCoverageData = { [normalizedPath]: normalizedFileCoverage } as any;      const tempCoverageMap = createCoverageMap(tempCoverageData);
-      
+      const tempCoverageData = {
+        [normalizedPath]: normalizedFileCoverage,
+      } as any;
+      const tempCoverageMap = createCoverageMap(tempCoverageData);
+
       // Merge into the normalized coverage
       normalizedCoverage.merge(tempCoverageMap);
     } else {
       // Multiple files map to same normalized path - merge them
-      logger.debug(`Merging ${originalPaths.length} files into ${normalizedPath}`);
-      
+      logger.debug(
+        `Merging ${originalPaths.length} files into ${normalizedPath}`
+      );
+
       // Create individual coverage maps for each file and merge them
       const baseFileCoverage = coverageMap.data[originalPaths[0]];
-      const baseData = (baseFileCoverage as any).data || baseFileCoverage;      let mergedData = { ...baseData } as any;      mergedData.path = normalizedPath;
-      
+      const baseData = (baseFileCoverage as any).data || baseFileCoverage;
+      let mergedData = { ...baseData } as any;
+      mergedData.path = normalizedPath;
+
       // Merge data from other files
       for (let i = 1; i < originalPaths.length; i++) {
         const otherFileCoverage = coverageMap.data[originalPaths[i]];
-        const otherData = (otherFileCoverage as any).data || otherFileCoverage;        
+        const otherData = (otherFileCoverage as any).data || otherFileCoverage;
+
         // Merge statement hit counts
-        for (const [statementId, hits] of Object.entries((otherData as any).s || {})) {          if (mergedData.s && mergedData.s[statementId] !== undefined) {
-            mergedData.s[statementId] += (hits as number);
+        for (const [statementId, hits] of Object.entries(
+          (otherData as any).s || {}
+        )) {
+          if (mergedData.s && mergedData.s[statementId] !== undefined) {
+            mergedData.s[statementId] += hits as number;
           } else if (mergedData.s) {
-            mergedData.s[statementId] = (hits as number);
+            mergedData.s[statementId] = hits as number;
           }
         }
-        
+
         // Merge function hit counts
-        for (const [funcId, hits] of Object.entries((otherData as any).f || {})) {          if (mergedData.f && mergedData.f[funcId] !== undefined) {
-            mergedData.f[funcId] += (hits as number);
+        for (const [funcId, hits] of Object.entries(
+          (otherData as any).f || {}
+        )) {
+          if (mergedData.f && mergedData.f[funcId] !== undefined) {
+            mergedData.f[funcId] += hits as number;
           } else if (mergedData.f) {
-            mergedData.f[funcId] = (hits as number);
+            mergedData.f[funcId] = hits as number;
           }
         }
-        
+
         // Merge branch hit counts (arrays)
-        for (const [branchId, branchHits] of Object.entries((otherData as any).b || {})) {          if (mergedData.b && mergedData.b[branchId] && Array.isArray(branchHits) && Array.isArray(mergedData.b[branchId])) {
+        for (const [branchId, branchHits] of Object.entries(
+          (otherData as any).b || {}
+        )) {
+          if (
+            mergedData.b &&
+            mergedData.b[branchId] &&
+            Array.isArray(branchHits) &&
+            Array.isArray(mergedData.b[branchId])
+          ) {
             const existingBranch = mergedData.b[branchId] as number[];
             for (let j = 0; j < (branchHits as number[]).length; j++) {
               if (existingBranch[j] !== undefined) {
@@ -83,16 +107,19 @@ export function normalizeCoveragePaths(
           }
         }
       }
-      
+
       // Create a temporary coverage map with the merged file
-      const tempCoverageData = { [normalizedPath]: mergedData } as any;      const tempCoverageMap = createCoverageMap(tempCoverageData);
-      
+      const tempCoverageData = { [normalizedPath]: mergedData } as any;
+      const tempCoverageMap = createCoverageMap(tempCoverageData);
+
       // Merge into the normalized coverage
       normalizedCoverage.merge(tempCoverageMap);
     }
   }
-  
-  logger.debug(`Normalized ${Object.keys(coverageMap.data).length} paths to ${Object.keys(normalizedCoverage.data).length} unique paths`);
+
+  logger.debug(
+    `Normalized ${Object.keys(coverageMap.data).length} paths to ${Object.keys(normalizedCoverage.data).length} unique paths`
+  );
   return normalizedCoverage;
 }
 

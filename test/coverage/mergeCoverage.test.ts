@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { mergeCoverage } from '../../src/coverage/mergeCoverage';
+import { FileCoverageData } from 'istanbul-lib-coverage';
 
 describe('mergeCoverage', () => {
   it('should merge two JSON coverage objects into a unified coverage map', () => {
@@ -36,9 +37,10 @@ describe('mergeCoverage', () => {
     const result = mergeCoverage([coverage1, coverage2]);
 
     // Assert: Check that both files are present in the merged result
-    expect(result.data).toHaveProperty('/src/file1.ts');
-    expect(result.data).toHaveProperty('/src/file2.ts');
-    expect(Object.keys(result.data)).toHaveLength(2);
+    const resultData = result.toJSON() as Record<string, FileCoverageData>;
+    expect(resultData).toHaveProperty('/src/file1.ts');
+    expect(resultData).toHaveProperty('/src/file2.ts');
+    expect(Object.keys(resultData)).toHaveLength(2);
   });
 
   it('should merge overlapping coverage for the same file', () => {
@@ -77,10 +79,11 @@ describe('mergeCoverage', () => {
     const result = mergeCoverage([coverage1, coverage2]);
 
     // Assert: Check that hit counts are summed for the same file
-    expect(result.data).toHaveProperty('/src/shared.ts');
-    expect(Object.keys(result.data)).toHaveLength(1);
+    const resultData = result.toJSON() as Record<string, FileCoverageData>;
+    expect(resultData).toHaveProperty('/src/shared.ts');
+    expect(Object.keys(resultData)).toHaveLength(1);
 
-    const mergedFile = result.data['/src/shared.ts'];
+    const mergedFile = resultData['/src/shared.ts'];
     expect(mergedFile?.s['0']).toBe(5); // 3 + 2
     expect(mergedFile?.s['1']).toBe(1); // 1 + 0
   });
@@ -90,7 +93,7 @@ describe('mergeCoverage', () => {
     const result = mergeCoverage([]);
 
     // Assert: Should return empty coverage map
-    expect(Object.keys(result.data)).toHaveLength(0);
+    expect(Object.keys(result.toJSON())).toHaveLength(0);
   });
 
   it('should handle single coverage object', () => {
@@ -113,8 +116,9 @@ describe('mergeCoverage', () => {
     const result = mergeCoverage([coverage]);
 
     // Assert: Should return the same coverage data
-    expect(result.data).toHaveProperty('/src/single.ts');
-    expect(Object.keys(result.data)).toHaveLength(1);
-    expect(result.data['/src/single.ts']?.s['0']).toBe(1);
+    const resultData = result.toJSON() as Record<string, FileCoverageData>;
+    expect(resultData).toHaveProperty('/src/single.ts');
+    expect(Object.keys(resultData)).toHaveLength(1);
+    expect(resultData['/src/single.ts']?.s['0']).toBe(1);
   });
 });
