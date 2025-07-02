@@ -1,0 +1,13 @@
+{
+  "runnerOverrides": {
+    "jest": "npm run test:jest -- --coverage --verbose",
+    "vitest": "npm run test:vitest -- --coverage --reporter=verbose"
+  },
+  "excludePatterns": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/*.d.ts",
+    "**/tests/**"
+  ],
+  "mergeStrategy": "merge"
+}

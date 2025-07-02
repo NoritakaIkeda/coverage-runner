@@ -8,6 +8,7 @@ import { setDebugMode, logger } from '../src/utils/logger.js';
 import { detectRunners } from '../src/utils/detectRunners.js';
 import { RunnerFactory } from '../src/runners/RunnerFactory.js';
 import { mergeCoverageFiles } from '../src/commands/mergeCoverage.js';
+import { executeInClonedRepo } from '../src/utils/executeInClonedRepo.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -56,12 +57,59 @@ function createCLI(): Command {
     .command('run')
     .description('Run coverage analysis for detected test runners')
     .option('-p, --path <path>', 'path to package.json file')
-    .action(async (options: { path?: string }) => {
+    .option('-r, --repo <url>', 'clone and analyze remote repository')
+    .option('-o, --output <dir>', 'output directory for coverage reports', 'coverage-merged')
+    .option('-b, --branch <branch>', 'git branch to checkout (only with --repo)')
+    .option('--no-install', 'skip dependency installation (only with --repo)')
+    .option('--no-cleanup', 'keep cloned repository after analysis (only with --repo)')
+    .option('--timeout <ms>', 'timeout for clone and install operations in milliseconds', '300000')
+    .action(async (options: { 
+      path?: string; 
+      repo?: string; 
+      output: string;
+      branch?: string;
+      install: boolean;
+      cleanup: boolean;
+      timeout: string;
+    }) => {
       if (program.opts().debug) {
         setDebugMode(true);
       }
 
       try {
+        // Handle remote repository analysis
+        if (options.repo) {
+          console.log(`🌐 Analyzing remote repository: ${options.repo}`);
+          
+          const result = await executeInClonedRepo(options.repo, {
+            outputDir: options.output,
+            branch: options.branch,
+            installDependencies: options.install,
+            cleanup: options.cleanup,
+            timeout: parseInt(options.timeout)
+          });
+
+          if (result.success) {
+            console.log('✅ Remote repository analysis completed successfully!');
+            console.log(`   📁 Output directory: ${result.outputDir}`);
+            if (result.runners && result.runners.length > 0) {
+              console.log(`   🏃 Runners used: ${result.runners.join(', ')}`);
+            }
+            if (result.coverageFiles && result.coverageFiles.length > 0) {
+              console.log(`   📊 Coverage files generated: ${result.coverageFiles.length}`);
+            }
+            if (!options.cleanup && result.clonedPath) {
+              console.log(`   📂 Cloned repository preserved at: ${result.clonedPath}`);
+            }
+          } else {
+            console.error('❌ Remote repository analysis failed');
+            console.error(`   Error: ${result.error}`);
+            process.exit(1);
+          }
+          return;
+        }
+
+        // Handle local repository analysis (existing functionality)
         const runners = detectRunners(options.path);
 
         if (runners.length === 0) {

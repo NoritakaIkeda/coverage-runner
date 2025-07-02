@@ -1,0 +1,154 @@
+name: Coverage Analysis
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  coverage:
+    name: Coverage Analysis
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18, 20]
+        
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run individual test suites for verification
+        run: |
+          echo "Running Jest tests..."
+          npm run test:jest
+          echo "Running Vitest tests..."
+          npm run test:vitest
+          
+      - name: Generate individual coverage reports
+        run: |
+          echo "Generating Jest coverage..."
+          npm run coverage:jest
+          echo "Generating Vitest coverage..."
+          npm run coverage:vitest
+          
+      - name: Install coverage-runner globally
+        run: npm install -g coverage-runner
+        
+      - name: Merge coverage reports with coverage-runner
+        run: |
+          echo "Merging coverage reports..."
+          coverage-runner merge \
+            -i "coverage-jest/coverage-final.json" "coverage-vitest/coverage-final.json" \
+            -o coverage-merged
+            
+      - name: Verify merged coverage output
+        run: |
+          echo "Checking merged coverage files..."
+          ls -la coverage-merged/
+          if [ ! -f "coverage-merged/coverage-merged.json" ]; then
+            echo "❌ coverage-merged.json not found"
+            exit 1
+          fi
+          if [ ! -f "coverage-merged/coverage-merged.lcov" ]; then
+            echo "❌ coverage-merged.lcov not found"
+            exit 1
+          fi
+          echo "✅ All merged coverage files present"
+          
+      - name: Display coverage summary
+        run: |
+          echo "📊 Coverage Summary:"
+          echo "==================="
+          if command -v jq &> /dev/null; then
+            jq -r '.total | "Lines: \(.lines.pct)% (\(.lines.covered)/\(.lines.total)), Functions: \(.functions.pct)% (\(.functions.covered)/\(.functions.total)), Branches: \(.branches.pct)% (\(.branches.covered)/\(.branches.total)), Statements: \(.statements.pct)% (\(.statements.covered)/\(.statements.total))"' coverage-merged/coverage-merged.json || echo "Could not parse coverage summary"
+          else
+            echo "jq not available, showing file sizes:"
+            wc -l coverage-merged/coverage-merged.json coverage-merged/coverage-merged.lcov
+          fi
+          
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage-merged/coverage-merged.lcov
+          flags: merged
+          name: merged-coverage
+          fail_ci_if_error: false
+          verbose: true
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          
+      - name: Upload Jest coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage-jest/lcov.info
+          flags: jest
+          name: jest-coverage
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          
+      - name: Upload Vitest coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage-vitest/lcov.info
+          flags: vitest
+          name: vitest-coverage
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          
+      - name: Upload coverage artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports-node-${{ matrix.node-version }}
+          path: |
+            coverage-jest/
+            coverage-vitest/
+            coverage-merged/
+          retention-days: 30
+          
+      - name: Comment coverage on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            try {
+              const coverage = JSON.parse(fs.readFileSync('coverage-merged/coverage-merged.json', 'utf8'));
+              const total = coverage.total;
+              
+              const coverageComment = `
+            ## 📊 Coverage Report
+            
+            | Metric | Coverage | Files |
+            |--------|----------|-------|
+            | **Lines** | ${total.lines.pct}% | ${total.lines.covered}/${total.lines.total} |
+            | **Functions** | ${total.functions.pct}% | ${total.functions.covered}/${total.functions.total} |
+            | **Branches** | ${total.branches.pct}% | ${total.branches.covered}/${total.branches.total} |
+            | **Statements** | ${total.statements.pct}% | ${total.statements.covered}/${total.statements.total} |
+            
+            🔗 [View detailed report on Codecov](https://codecov.io/gh/${{ github.repository }}/pull/${{ github.event.number }})
+            
+            Generated by [coverage-runner](https://github.com/your-org/coverage-runner) 🚀
+            `;
+            
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: coverageComment
+              });
+            } catch (error) {
+              console.log('Could not post coverage comment:', error.message);
+            }

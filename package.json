@@ -1,12 +1,22 @@
 {
   "name": "coverage-runner",
   "version": "1.0.0",
-  "description": "A tool for running and managing code coverage analysis",
+  "description": "Unified coverage analysis tool for Jest, Vitest, and other test frameworks with intelligent merging and reporting",
   "type": "module",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "bin": {
     "coverage-runner": "./dist/bin/coverage-runner.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CONTRIBUTING.md",
+    "examples"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
   },
   "directories": {
     "doc": "docs",
@@ -25,6 +35,8 @@
     "test:ci": "npm run build && echo 'Tests validated via build process'",
     "test:node": "node --test test/**/*.test.ts || vitest run",
     "prepare": "husky",
+    "prepublishOnly": "npm run quality:check && npm run build",
+    "postpublish": "echo '🎉 coverage-runner published successfully!'",
     "quality:check": "npm run typecheck && npm run lint && npm run test",
     "quality:audit": "npm run quality:check && echo '✅ Full quality audit passed'"
   },
@@ -32,9 +44,24 @@
     "type": "git",
     "url": "git+https://github.com/NoritakaIkeda/coverage-runner.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "coverage",
+    "testing",
+    "jest",
+    "vitest",
+    "merge",
+    "istanbul",
+    "lcov",
+    "test-coverage",
+    "code-coverage",
+    "unified-coverage",
+    "coverage-analysis",
+    "coverage-merger",
+    "ci-cd",
+    "devops"
+  ],
+  "author": "Noritaka Ikeda <noritakaikeda@example.com>",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/NoritakaIkeda/coverage-runner/issues"
   },
