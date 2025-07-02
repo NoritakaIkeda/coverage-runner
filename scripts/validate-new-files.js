@@ -5,9 +5,14 @@
  * Runs ESLint on all TypeScript files and ensures no type safety violations
  */
 
-const { execSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
+import { execSync } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 function findAllTypeScriptFiles(dir, files = []) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
@@ -78,10 +83,10 @@ function validateTypeScriptFiles() {
 // Add validation for package.json scripts
 function validatePackageJsonScripts() {
   const packagePath = path.join(__dirname, '../package.json');
-  const package = JSON.parse(fs.readFileSync(packagePath, 'utf-8'));
+  const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf-8'));
   
   const requiredScripts = ['lint', 'typecheck', 'test', 'build'];
-  const missingScripts = requiredScripts.filter(script => !package.scripts[script]);
+  const missingScripts = requiredScripts.filter(script => !packageJson.scripts[script]);
   
   if (missingScripts.length > 0) {
     console.error(`❌ Missing required scripts: ${missingScripts.join(', ')}`);
@@ -91,12 +96,12 @@ function validatePackageJsonScripts() {
   console.log('✅ Package.json scripts validation passed!');
 }
 
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   validatePackageJsonScripts();
   validateTypeScriptFiles();
 }
 
-module.exports = {
+export {
   findAllTypeScriptFiles,
   validateTypeScriptFiles,
   validatePackageJsonScripts
