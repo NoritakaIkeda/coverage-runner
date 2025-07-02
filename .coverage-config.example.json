@@ -1,0 +1,14 @@
+{
+  "runnerOverrides": {
+    "jest": "jest --config=jest.config.ci.js",
+    "vitest": "vitest --config=vitest.custom.config.js"
+  },
+  "excludePatterns": [
+    "**/__tests__/**",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "**/test/**",
+    "**/tests/**"
+  ],
+  "mergeStrategy": "merge"
+}
