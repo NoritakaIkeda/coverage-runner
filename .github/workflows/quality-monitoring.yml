@@ -31,9 +31,8 @@ jobs:
           TS_FILES=$(find . -name "*.ts" -not -path "./node_modules/*" -not -path "./dist/*" | wc -l)
           echo "📄 Total TypeScript files: $TS_FILES"
           
-          # Run all validation scripts
-          node scripts/validate-new-files.js
-          node scripts/validate-workflow.js
+          # Run quality checks
+          npm run typecheck
           
           # Check for any type safety violations
           npm run lint 2>&1 | tee full-lint-report.log

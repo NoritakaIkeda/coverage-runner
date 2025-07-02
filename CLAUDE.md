@@ -125,9 +125,9 @@ npm run quality:check    # 全品質ゲート実行
 npm run quality:audit    # 完全品質監査
 
 # 個別検証
-npm run validate:all     # ファイル・設定検証
-node scripts/validate-new-files.js      # ファイル検証
-node scripts/validate-workflow.js       # ワークフロー検証
+npm run typecheck      # TypeScript型チェック
+npm run lint           # ESLint検証
+npm run test           # テスト実行
 ```
 
 ### ⚡ 緊急時の対応
