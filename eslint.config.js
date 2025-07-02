@@ -1,10 +1,11 @@
-const typescriptEslint = require('@typescript-eslint/eslint-plugin');
-const typescriptParser = require('@typescript-eslint/parser');
-const prettierConfig = require('eslint-config-prettier');
+import typescriptEslint from '@typescript-eslint/eslint-plugin';
+import typescriptParser from '@typescript-eslint/parser';
+import prettierConfig from 'eslint-config-prettier';
 
-module.exports = [
+export default [
+  // Source files with strict checking
   {
-    files: ['**/*.ts', '**/*.tsx'],
+    files: ['src/**/*.ts', 'bin/**/*.ts'],
     ignores: [
       'node_modules/**',
       'dist/**', 
@@ -40,6 +41,32 @@ module.exports = [
       '@typescript-eslint/prefer-nullish-coalescing': 'warn',
       '@typescript-eslint/prefer-optional-chain': 'warn',
       '@typescript-eslint/strict-boolean-expressions': 'warn',
+    },
+  },
+  // Test files with relaxed checking
+  {
+    files: ['test/**/*.ts'],
+    ignores: [
+      'node_modules/**',
+      'dist/**', 
+      'coverage/**',
+      'examples/**/node_modules/**'
+    ],
+    languageOptions: {
+      parser: typescriptParser,
+      parserOptions: {
+        ecmaVersion: 2022,
+        sourceType: 'module',
+      },
+    },
+    plugins: {
+      '@typescript-eslint': typescriptEslint,
+    },
+    rules: {
+      ...typescriptEslint.configs.recommended.rules,
+      '@typescript-eslint/no-unused-vars': 'error',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-inferrable-types': 'error',
     },
   },
   prettierConfig,

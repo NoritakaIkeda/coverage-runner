@@ -3,8 +3,11 @@ import { BaseRunner, CoverageResult } from './Runner.js';
 import { logger } from '../utils/logger.js';
 
 export class VitestRunner extends BaseRunner {
-  constructor() {
+  public readonly command: string | undefined;
+
+  constructor(command?: string) {
     super('./coverage');
+    this.command = command;
   }
 
   async runCoverage(): Promise<CoverageResult> {
