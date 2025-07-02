@@ -5,7 +5,7 @@
     "lib": ["ES2022"],
     "moduleResolution": "node",
     "outDir": "./dist",
-    "rootDir": "./",
+    "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -35,9 +35,7 @@
     "strictPropertyInitialization": false // 段階的導入のため一時的に無効
   },
   "include": [
-    "src/**/*",
-    "bin/**/*",
-    "test/**/*"
+    "src/**/*"
   ],
   "exclude": [
     "node_modules",

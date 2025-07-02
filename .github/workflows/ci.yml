@@ -103,9 +103,9 @@ jobs:
           fi
           echo "📂 Contents of dist directory:"
           ls -la dist/
-          if [ ! -f "dist/index.js" ]; then
+          if [ ! -f "dist/src/index.js" ]; then
             echo "❌ Build failed - main output file not found"
-            echo "Expected: dist/index.js"
+            echo "Expected: dist/src/index.js"
             echo "Available files:"
             find dist -name "*.js" -type f
             exit 1
