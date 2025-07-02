@@ -1,22 +1,22 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
-import { promises as fs } from 'fs'
-import { join } from 'path'
-import { tmpdir } from 'os'
-import { loadConfig } from '../../src/config/load.js'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { promises as fs } from 'fs';
+import { join } from 'path';
+import { tmpdir } from 'os';
+import { loadConfig } from '../../src/config/load.js';
 
 describe('loadConfig', () => {
-  let testDir: string
+  let testDir: string;
 
   beforeEach(async () => {
-    testDir = await fs.mkdtemp(join(tmpdir(), 'coverage-runner-test-'))
-  })
+    testDir = await fs.mkdtemp(join(tmpdir(), 'coverage-runner-test-'));
+  });
 
   afterEach(async () => {
-    await fs.rm(testDir, { recursive: true, force: true })
-  })
+    await fs.rm(testDir, { recursive: true, force: true });
+  });
 
   it('should automatically load coverage.config.js when it exists', async () => {
-    const configPath = join(testDir, 'coverage.config.js')
+    const configPath = join(testDir, 'coverage.config.js');
     const configContent = `
       module.exports = {
         runnerOverrides: {
@@ -25,69 +25,75 @@ describe('loadConfig', () => {
         excludePatterns: ["**/*.spec.ts"],
         mergeStrategy: "merge"
       }
-    `
-    await fs.writeFile(configPath, configContent)
+    `;
+    await fs.writeFile(configPath, configContent);
 
-    const config = await loadConfig(testDir)
+    const config = await loadConfig(testDir);
 
     expect(config).toEqual({
       runnerOverrides: {
-        jest: "jest --config custom.config.js"
+        jest: 'jest --config custom.config.js',
       },
-      excludePatterns: ["**/*.spec.ts"],
-      mergeStrategy: "merge"
-    })
-  })
+      excludePatterns: ['**/*.spec.ts'],
+      mergeStrategy: 'merge',
+    });
+  });
 
   it('should automatically load .coverage-config.json when it exists', async () => {
-    const configPath = join(testDir, '.coverage-config.json')
+    const configPath = join(testDir, '.coverage-config.json');
     const configContent = {
       runnerOverrides: {
-        vitest: "vitest --config vitest.custom.config.js"
+        vitest: 'vitest --config vitest.custom.config.js',
       },
-      excludePatterns: ["**/__tests__/**"],
-      mergeStrategy: "separate"
-    }
-    await fs.writeFile(configPath, JSON.stringify(configContent, null, 2))
+      excludePatterns: ['**/__tests__/**'],
+      mergeStrategy: 'separate',
+    };
+    await fs.writeFile(configPath, JSON.stringify(configContent, null, 2));
 
-    const config = await loadConfig(testDir)
+    const config = await loadConfig(testDir);
 
-    expect(config).toEqual(configContent)
-  })
+    expect(config).toEqual(configContent);
+  });
 
   it('should prioritize explicit config path over automatic discovery', async () => {
     // Create automatic config
-    const autoConfigPath = join(testDir, 'coverage.config.js')
-    await fs.writeFile(autoConfigPath, `
+    const autoConfigPath = join(testDir, 'coverage.config.js');
+    await fs.writeFile(
+      autoConfigPath,
+      `
       module.exports = {
         mergeStrategy: "merge"
       }
-    `)
+    `
+    );
 
     // Create explicit config
-    const explicitConfigPath = join(testDir, 'custom.json')
+    const explicitConfigPath = join(testDir, 'custom.json');
     const explicitConfig = {
       runnerOverrides: {
-        jest: "jest --config explicit.config.js"
+        jest: 'jest --config explicit.config.js',
       },
-      mergeStrategy: "separate"
-    }
-    await fs.writeFile(explicitConfigPath, JSON.stringify(explicitConfig, null, 2))
+      mergeStrategy: 'separate',
+    };
+    await fs.writeFile(
+      explicitConfigPath,
+      JSON.stringify(explicitConfig, null, 2)
+    );
 
-    const config = await loadConfig(testDir, explicitConfigPath)
+    const config = await loadConfig(testDir, explicitConfigPath);
 
-    expect(config).toEqual(explicitConfig)
-  })
+    expect(config).toEqual(explicitConfig);
+  });
 
   it('should return default config when no config file exists', async () => {
-    const config = await loadConfig(testDir)
+    const config = await loadConfig(testDir);
 
-    expect(config).toEqual({})
-  })
+    expect(config).toEqual({});
+  });
 
   it('should return default config when explicit path does not exist', async () => {
-    const config = await loadConfig(testDir, join(testDir, 'nonexistent.json'))
+    const config = await loadConfig(testDir, join(testDir, 'nonexistent.json'));
 
-    expect(config).toEqual({})
-  })
-})
+    expect(config).toEqual({});
+  });
+});

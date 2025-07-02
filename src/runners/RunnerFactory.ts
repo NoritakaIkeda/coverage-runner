@@ -14,11 +14,11 @@ export class RunnerFactory {
 
   createRunner(runnerType: TestRunner): Runner {
     const customCommand = this.config?.runnerOverrides?.[runnerType];
-    
+
     switch (runnerType) {
       case 'jest':
         return new JestRunner(customCommand);
-      case 'vitest':  
+      case 'vitest':
         return new VitestRunner(customCommand);
       case 'mocha':
         // TODO: Implement MochaRunner

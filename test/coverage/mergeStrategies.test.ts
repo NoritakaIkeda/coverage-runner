@@ -1,190 +1,212 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
-import { promises as fs } from 'fs'
-import { join } from 'path'
-import { tmpdir } from 'os'
-import { createCoverageMap } from 'istanbul-lib-coverage'
-import { executeWithMergeStrategy } from '../../src/coverage/mergeStrategies.js'
-import type { Config } from '../../src/types/config.js'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { promises as fs } from 'fs';
+import { join } from 'path';
+import { tmpdir } from 'os';
+import { createCoverageMap } from 'istanbul-lib-coverage';
+import { executeWithMergeStrategy } from '../../src/coverage/mergeStrategies.js';
+import type { Config } from '../../src/types/config.js';
 
 describe('executeWithMergeStrategy', () => {
-  let testDir: string
+  let testDir: string;
 
   beforeEach(async () => {
-    testDir = await fs.mkdtemp(join(tmpdir(), 'coverage-merge-test-'))
-  })
+    testDir = await fs.mkdtemp(join(tmpdir(), 'coverage-merge-test-'));
+  });
 
   afterEach(async () => {
-    await fs.rm(testDir, { recursive: true, force: true })
-  })
+    await fs.rm(testDir, { recursive: true, force: true });
+  });
 
   it('should create single merged file when mergeStrategy is "merge"', async () => {
     const config: Config = {
-      mergeStrategy: 'merge'
-    }
+      mergeStrategy: 'merge',
+    };
 
     // Create mock coverage files
     const jestCoverage = createCoverageMap({
       '/project/src/index.ts': {
         path: '/project/src/index.ts',
-        statementMap: { '0': { start: { line: 1, column: 0 }, end: { line: 1, column: 10 } } },
+        statementMap: {
+          '0': { start: { line: 1, column: 0 }, end: { line: 1, column: 10 } },
+        },
         fnMap: {},
         branchMap: {},
         s: { '0': 1 },
         f: {},
-        b: {}
-      }
-    })
+        b: {},
+      },
+    });
 
     const vitestCoverage = createCoverageMap({
       '/project/src/utils.ts': {
         path: '/project/src/utils.ts',
-        statementMap: { '0': { start: { line: 1, column: 0 }, end: { line: 1, column: 10 } } },
+        statementMap: {
+          '0': { start: { line: 1, column: 0 }, end: { line: 1, column: 10 } },
+        },
         fnMap: {},
         branchMap: {},
         s: { '0': 1 },
         f: {},
-        b: {}
-      }
-    })
+        b: {},
+      },
+    });
 
     const runnerResults = [
       { runner: 'jest', coverageMap: jestCoverage },
-      { runner: 'vitest', coverageMap: vitestCoverage }
-    ]
+      { runner: 'vitest', coverageMap: vitestCoverage },
+    ];
 
-    await executeWithMergeStrategy(config, runnerResults, testDir)
+    await executeWithMergeStrategy(config, runnerResults, testDir);
 
     // Check that only merged file exists
-    const files = await fs.readdir(testDir)
-    expect(files).toContain('coverage-merged.json')
-    expect(files).not.toContain('coverage-jest.json')
-    expect(files).not.toContain('coverage-vitest.json')
+    const files = await fs.readdir(testDir);
+    expect(files).toContain('coverage-merged.json');
+    expect(files).not.toContain('coverage-jest.json');
+    expect(files).not.toContain('coverage-vitest.json');
 
     // Verify merged content
-    const mergedContent = await fs.readFile(join(testDir, 'coverage-merged.json'), 'utf-8')
-    const merged = JSON.parse(mergedContent)
-    expect(merged).toHaveProperty('/project/src/index.ts')
-    expect(merged).toHaveProperty('/project/src/utils.ts')
-  })
+    const mergedContent = await fs.readFile(
+      join(testDir, 'coverage-merged.json'),
+      'utf-8'
+    );
+    const merged = JSON.parse(mergedContent);
+    expect(merged).toHaveProperty('/project/src/index.ts');
+    expect(merged).toHaveProperty('/project/src/utils.ts');
+  });
 
   it('should create separate files when mergeStrategy is "separate"', async () => {
     const config: Config = {
-      mergeStrategy: 'separate'
-    }
+      mergeStrategy: 'separate',
+    };
 
     const jestCoverage = createCoverageMap({
       '/project/src/index.ts': {
         path: '/project/src/index.ts',
-        statementMap: { '0': { start: { line: 1, column: 0 }, end: { line: 1, column: 10 } } },
+        statementMap: {
+          '0': { start: { line: 1, column: 0 }, end: { line: 1, column: 10 } },
+        },
         fnMap: {},
         branchMap: {},
         s: { '0': 1 },
         f: {},
-        b: {}
-      }
-    })
+        b: {},
+      },
+    });
 
     const vitestCoverage = createCoverageMap({
       '/project/src/utils.ts': {
         path: '/project/src/utils.ts',
-        statementMap: { '0': { start: { line: 1, column: 0 }, end: { line: 1, column: 10 } } },
+        statementMap: {
+          '0': { start: { line: 1, column: 0 }, end: { line: 1, column: 10 } },
+        },
         fnMap: {},
         branchMap: {},
         s: { '0': 1 },
         f: {},
-        b: {}
-      }
-    })
+        b: {},
+      },
+    });
 
     const runnerResults = [
       { runner: 'jest', coverageMap: jestCoverage },
-      { runner: 'vitest', coverageMap: vitestCoverage }
-    ]
+      { runner: 'vitest', coverageMap: vitestCoverage },
+    ];
 
-    await executeWithMergeStrategy(config, runnerResults, testDir)
+    await executeWithMergeStrategy(config, runnerResults, testDir);
 
     // Check that separate files exist
-    const files = await fs.readdir(testDir)
-    expect(files).toContain('coverage-jest.json')
-    expect(files).toContain('coverage-vitest.json')
-    expect(files).not.toContain('coverage-merged.json')
+    const files = await fs.readdir(testDir);
+    expect(files).toContain('coverage-jest.json');
+    expect(files).toContain('coverage-vitest.json');
+    expect(files).not.toContain('coverage-merged.json');
 
     // Verify separate content
-    const jestContent = await fs.readFile(join(testDir, 'coverage-jest.json'), 'utf-8')
-    const jestJson = JSON.parse(jestContent)
-    expect(jestJson).toHaveProperty('/project/src/index.ts')
-    expect(jestJson).not.toHaveProperty('/project/src/utils.ts')
+    const jestContent = await fs.readFile(
+      join(testDir, 'coverage-jest.json'),
+      'utf-8'
+    );
+    const jestJson = JSON.parse(jestContent);
+    expect(jestJson).toHaveProperty('/project/src/index.ts');
+    expect(jestJson).not.toHaveProperty('/project/src/utils.ts');
 
-    const vitestContent = await fs.readFile(join(testDir, 'coverage-vitest.json'), 'utf-8')
-    const vitestJson = JSON.parse(vitestContent)
-    expect(vitestJson).toHaveProperty('/project/src/utils.ts')
-    expect(vitestJson).not.toHaveProperty('/project/src/index.ts')
-  })
+    const vitestContent = await fs.readFile(
+      join(testDir, 'coverage-vitest.json'),
+      'utf-8'
+    );
+    const vitestJson = JSON.parse(vitestContent);
+    expect(vitestJson).toHaveProperty('/project/src/utils.ts');
+    expect(vitestJson).not.toHaveProperty('/project/src/index.ts');
+  });
 
   it('should default to "merge" strategy when not specified', async () => {
-    const config: Config = {}
+    const config: Config = {};
 
     const jestCoverage = createCoverageMap({
       '/project/src/index.ts': {
         path: '/project/src/index.ts',
-        statementMap: { '0': { start: { line: 1, column: 0 }, end: { line: 1, column: 10 } } },
+        statementMap: {
+          '0': { start: { line: 1, column: 0 }, end: { line: 1, column: 10 } },
+        },
         fnMap: {},
         branchMap: {},
         s: { '0': 1 },
         f: {},
-        b: {}
-      }
-    })
+        b: {},
+      },
+    });
 
-    const runnerResults = [
-      { runner: 'jest', coverageMap: jestCoverage }
-    ]
+    const runnerResults = [{ runner: 'jest', coverageMap: jestCoverage }];
 
-    await executeWithMergeStrategy(config, runnerResults, testDir)
+    await executeWithMergeStrategy(config, runnerResults, testDir);
 
     // Should default to merge behavior
-    const files = await fs.readdir(testDir)
-    expect(files).toContain('coverage-merged.json')
-    expect(files).not.toContain('coverage-jest.json')
-  })
+    const files = await fs.readdir(testDir);
+    expect(files).toContain('coverage-merged.json');
+    expect(files).not.toContain('coverage-jest.json');
+  });
 
   it('should apply excludePatterns before merging', async () => {
     const config: Config = {
       mergeStrategy: 'merge',
-      excludePatterns: ['**/*.spec.ts']
-    }
+      excludePatterns: ['**/*.spec.ts'],
+    };
 
     const jestCoverage = createCoverageMap({
       '/project/src/index.ts': {
         path: '/project/src/index.ts',
-        statementMap: { '0': { start: { line: 1, column: 0 }, end: { line: 1, column: 10 } } },
+        statementMap: {
+          '0': { start: { line: 1, column: 0 }, end: { line: 1, column: 10 } },
+        },
         fnMap: {},
         branchMap: {},
         s: { '0': 1 },
         f: {},
-        b: {}
+        b: {},
       },
       '/project/src/index.spec.ts': {
         path: '/project/src/index.spec.ts',
-        statementMap: { '0': { start: { line: 1, column: 0 }, end: { line: 1, column: 10 } } },
+        statementMap: {
+          '0': { start: { line: 1, column: 0 }, end: { line: 1, column: 10 } },
+        },
         fnMap: {},
         branchMap: {},
         s: { '0': 1 },
         f: {},
-        b: {}
-      }
-    })
+        b: {},
+      },
+    });
 
-    const runnerResults = [
-      { runner: 'jest', coverageMap: jestCoverage }
-    ]
+    const runnerResults = [{ runner: 'jest', coverageMap: jestCoverage }];
 
-    await executeWithMergeStrategy(config, runnerResults, testDir)
+    await executeWithMergeStrategy(config, runnerResults, testDir);
 
     // Verify that spec files are excluded
-    const mergedContent = await fs.readFile(join(testDir, 'coverage-merged.json'), 'utf-8')
-    const merged = JSON.parse(mergedContent)
-    expect(merged).toHaveProperty('/project/src/index.ts')
-    expect(merged).not.toHaveProperty('/project/src/index.spec.ts')
-  })
-})
+    const mergedContent = await fs.readFile(
+      join(testDir, 'coverage-merged.json'),
+      'utf-8'
+    );
+    const merged = JSON.parse(mergedContent);
+    expect(merged).toHaveProperty('/project/src/index.ts');
+    expect(merged).not.toHaveProperty('/project/src/index.spec.ts');
+  });
+});
