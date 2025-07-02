@@ -1,4 +1,4 @@
-import { BaseRunner, CoverageResult } from './Runner';
+import { BaseRunner, CoverageResult } from './Runner.js';
 
 export class DummyRunner extends BaseRunner {
   constructor() {

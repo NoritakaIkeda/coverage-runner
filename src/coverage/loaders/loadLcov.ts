@@ -1,7 +1,10 @@
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
+ 
 import * as fs from 'fs';
-import { createCoverageMap, CoverageMap } from 'istanbul-lib-coverage';
-import { logger } from '../../utils/logger';
+import istanbulLibCoverage from 'istanbul-lib-coverage';
+import { logger } from '../../utils/logger.js';
+
+const { createCoverageMap } = istanbulLibCoverage;
+type CoverageMap = istanbulLibCoverage.CoverageMap;
 
 export function loadLcov(filePath: string): CoverageMap {
   logger.debug(`Loading LCOV file: ${filePath}`);

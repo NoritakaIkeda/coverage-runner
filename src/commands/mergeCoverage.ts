@@ -1,12 +1,12 @@
 import * as path from 'path';
 import { glob } from 'glob';
-import { logger } from '../utils/logger';
-import { loadLcov } from '../coverage/loaders/loadLcov';
-import { loadCobertura } from '../coverage/loaders/loadCobertura';
-import { loadIstanbulJson } from '../coverage/loaders/loadIstanbulJson';
-import { mergeCoverage, CoverageData } from '../coverage/mergeCoverage';
-import { normalizeCoveragePaths } from '../coverage/normalizeCoveragePaths';
-import { writeMergedCoverage } from '../coverage/writeMergedCoverage';
+import { logger } from '../utils/logger.js';
+import { loadLcov } from '../coverage/loaders/loadLcov.js';
+import { loadCobertura } from '../coverage/loaders/loadCobertura.js';
+import { loadIstanbulJson } from '../coverage/loaders/loadIstanbulJson.js';
+import { mergeCoverage, CoverageData } from '../coverage/mergeCoverage.js';
+import { normalizeCoveragePaths } from '../coverage/normalizeCoveragePaths.js';
+import { writeMergedCoverage } from '../coverage/writeMergedCoverage.js';
 
 export interface MergeCoverageOptions {
   inputPatterns: string[];

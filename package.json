@@ -2,6 +2,7 @@
   "name": "coverage-runner",
   "version": "1.0.0",
   "description": "A tool for running and managing code coverage analysis",
+  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {

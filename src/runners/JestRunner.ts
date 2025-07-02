@@ -1,6 +1,6 @@
 import { execa } from 'execa';
-import { BaseRunner, CoverageResult } from './Runner';
-import { logger } from '../utils/logger';
+import { BaseRunner, CoverageResult } from './Runner.js';
+import { logger } from '../utils/logger.js';
 
 export class JestRunner extends BaseRunner {
   constructor() {

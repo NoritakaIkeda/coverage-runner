@@ -2,11 +2,15 @@
 
 import { Command } from 'commander';
 import { readFileSync } from 'fs';
-import { join } from 'path';
-import { setDebugMode, logger } from '../src/utils/logger';
-import { detectRunners } from '../src/utils/detectRunners';
-import { RunnerFactory } from '../src/runners/RunnerFactory';
-import { mergeCoverageFiles } from '../src/commands/mergeCoverage';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+import { setDebugMode, logger } from '../src/utils/logger.js';
+import { detectRunners } from '../src/utils/detectRunners.js';
+import { RunnerFactory } from '../src/runners/RunnerFactory.js';
+import { mergeCoverageFiles } from '../src/commands/mergeCoverage.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 function getVersion(): string {
   try {
@@ -196,7 +200,8 @@ function main(): void {
   program.parse();
 }
 
-if (require.main === module) {
+// ESM equivalent of require.main === module
+if (import.meta.url === `file://${process.argv[1]}`) {
   main();
 }
 

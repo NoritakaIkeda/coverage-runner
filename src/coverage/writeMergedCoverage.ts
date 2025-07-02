@@ -1,9 +1,14 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { CoverageMap, FileCoverageData } from 'istanbul-lib-coverage';
-import { createContext } from 'istanbul-lib-report';
-import { create } from 'istanbul-reports';
-import { logger } from '../utils/logger';
+import istanbulLibCoverage from 'istanbul-lib-coverage';
+import istanbulLibReport from 'istanbul-lib-report';
+import istanbulReports from 'istanbul-reports';
+import { logger } from '../utils/logger.js';
+
+type CoverageMap = istanbulLibCoverage.CoverageMap;
+type FileCoverageData = istanbulLibCoverage.FileCoverageData;
+const { createContext } = istanbulLibReport;
+const { create } = istanbulReports;
 
 // Type guard to check if coverage data is FileCoverageData
 function isFileCoverageData(data: unknown): data is FileCoverageData {

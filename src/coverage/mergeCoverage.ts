@@ -1,8 +1,8 @@
-import {
-  createCoverageMap,
-  CoverageMap,
-  CoverageMapData,
-} from 'istanbul-lib-coverage';
+import istanbulLibCoverage from 'istanbul-lib-coverage';
+
+const { createCoverageMap } = istanbulLibCoverage;
+type CoverageMap = istanbulLibCoverage.CoverageMap;
+type CoverageMapData = istanbulLibCoverage.CoverageMapData;
 
 export type CoverageData = CoverageMapData;
 
