@@ -79,10 +79,10 @@ describe('mergeCoverage', () => {
     // Assert: Check that hit counts are summed for the same file
     expect(result.data).toHaveProperty('/src/shared.ts');
     expect(Object.keys(result.data)).toHaveLength(1);
-    
+
     const mergedFile = result.data['/src/shared.ts'];
-    expect(mergedFile.s['0']).toBe(5); // 3 + 2
-    expect(mergedFile.s['1']).toBe(1); // 1 + 0
+    expect(mergedFile?.s['0']).toBe(5); // 3 + 2
+    expect(mergedFile?.s['1']).toBe(1); // 1 + 0
   });
 
   it('should return empty coverage map when given empty array', () => {
@@ -115,6 +115,6 @@ describe('mergeCoverage', () => {
     // Assert: Should return the same coverage data
     expect(result.data).toHaveProperty('/src/single.ts');
     expect(Object.keys(result.data)).toHaveLength(1);
-    expect(result.data['/src/single.ts'].s['0']).toBe(1);
+    expect(result.data['/src/single.ts']?.s['0']).toBe(1);
   });
 });

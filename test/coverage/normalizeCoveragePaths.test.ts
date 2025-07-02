@@ -45,9 +45,11 @@ describe('normalizeCoveragePaths', () => {
     // Assert: Should have only one entry for the same file
     const normalizedKeys = Object.keys(normalizedCoverage.data);
     expect(normalizedKeys).toHaveLength(1);
-    
+
     // The normalized path should be consistent
-    const normalizedFile = normalizedCoverage.data[normalizedKeys[0]] as any;
+    const normalizedFile = normalizedCoverage.data[
+      normalizedKeys[0] as string
+    ] as any;
     expect((normalizedFile as any).s['0']).toBe(5); // 2 + 3 = 5 (merged hit counts)
   });
 
@@ -84,13 +86,18 @@ describe('normalizeCoveragePaths', () => {
     const mergedCoverage = mergeCoverage([coverage1, coverage2]);
 
     // Act: Normalize paths
-    const normalizedCoverage = normalizeCoveragePaths(mergedCoverage, '/project');
+    const normalizedCoverage = normalizeCoveragePaths(
+      mergedCoverage,
+      '/project'
+    );
 
     // Assert: Should merge files with same relative path
     const normalizedKeys = Object.keys(normalizedCoverage.data);
     expect(normalizedKeys).toHaveLength(1);
-    
-    const normalizedFile = normalizedCoverage.data[normalizedKeys[0]] as any;
+
+    const normalizedFile = normalizedCoverage.data[
+      normalizedKeys[0] as string
+    ] as any;
     expect((normalizedFile as any).s['0']).toBe(5); // 1 + 4 = 5
   });
 
@@ -169,8 +176,10 @@ describe('normalizeCoveragePaths', () => {
     // Assert: Should normalize complex paths to same file
     const normalizedKeys = Object.keys(normalizedCoverage.data);
     expect(normalizedKeys).toHaveLength(1);
-    
-    const normalizedFile = normalizedCoverage.data[normalizedKeys[0]] as any;
+
+    const normalizedFile = normalizedCoverage.data[
+      normalizedKeys[0] as string
+    ] as any;
     expect((normalizedFile as any).s['0']).toBe(3); // 1 + 2 = 3
   });
 

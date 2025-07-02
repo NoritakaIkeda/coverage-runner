@@ -41,14 +41,14 @@ end_of_record`;
 
     // Assert: Check that coverage map contains expected data
     expect(result.data).toHaveProperty('/src/example.ts');
-    
+
     const fileData = result.data['/src/example.ts'];
-    expect(fileData.path).toBe('/src/example.ts');
-    
+    expect(fileData?.path).toBe('/src/example.ts');
+
     // Check statement coverage (line coverage in LCOV)
-    expect(fileData.s).toBeDefined();
-    expect(Object.keys(fileData.s)).toContain('0'); // First statement
-    expect(Object.keys(fileData.s)).toContain('1'); // Second statement
+    expect(fileData?.s).toBeDefined();
+    expect(Object.keys(fileData?.s ?? {})).toContain('0'); // First statement
+    expect(Object.keys(fileData?.s ?? {})).toContain('1'); // Second statement
   });
 
   it('should handle empty LCOV file', () => {
