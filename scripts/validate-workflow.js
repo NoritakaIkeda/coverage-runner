@@ -88,7 +88,7 @@ function validatePackageJsonConsistency() {
   console.log('🔍 Validating package.json consistency...');
   
   const packagePath = path.join(__dirname, '../package.json');
-  const package = JSON.parse(fs.readFileSync(packagePath, 'utf-8'));
+  const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf-8'));
   
   // Ensure critical dev dependencies are present
   const requiredDevDeps = [
@@ -100,7 +100,7 @@ function validatePackageJsonConsistency() {
   ];
   
   const missing = requiredDevDeps.filter(dep => 
-    !package.devDependencies || !package.devDependencies[dep]
+    !packageJson.devDependencies || !packageJson.devDependencies[dep]
   );
   
   if (missing.length > 0) {
