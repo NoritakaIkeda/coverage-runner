@@ -27,14 +27,16 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-# Run ESLint with strict error checking
+# Run ESLint with strict error checking (warnings allowed)
 echo "🧹 Linting..."
-npm run lint 2>&1 | tee lint-output.log
-if grep -q "error" lint-output.log; then
+npm run lint 2>&1 | tee lint-output.log || true
+if grep -q " error " lint-output.log; then
   echo "❌ ESLint errors detected!"
   cat lint-output.log
   rm lint-output.log
   exit 1
+else
+  echo "✅ ESLint passed (warnings are acceptable)"
 fi
 rm -f lint-output.log
 

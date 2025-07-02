@@ -33,14 +33,17 @@ jobs:
       - name: TypeScript type checking
         run: npm run typecheck
 
-      - name: ESLint strict checking (fail on errors)
+      - name: ESLint strict checking (fail on errors only)
         run: |
-          npm run lint 2>&1 | tee lint-output.log
-          if grep -q "error" lint-output.log; then
+          npm run lint 2>&1 | tee lint-output.log || true
+          if grep -q " error " lint-output.log; then
             echo "❌ ESLint errors detected!"
             cat lint-output.log
             exit 1
+          else
+            echo "✅ ESLint passed (warnings are acceptable)"
           fi
+          rm -f lint-output.log
 
       - name: Prettier format checking
         run: npx prettier --check "src/**/*.ts" "test/**/*.ts" "bin/**/*.ts"

@@ -16,7 +16,7 @@
     "build": "tsc",
     "dev": "tsx src/index.ts",
     "start": "node dist/index.js",
-    "lint": "eslint src/**/*.ts bin/**/*.ts test/**/*.ts",
+    "lint": "eslint src/**/*.ts bin/**/*.ts test/**/*.ts --max-warnings 100",
     "lint:fix": "eslint src/**/*.ts bin/**/*.ts test/**/*.ts --fix",
     "format": "prettier --write src/**/*.ts bin/**/*.ts test/**/*.ts",
     "typecheck": "tsc --noEmit",
