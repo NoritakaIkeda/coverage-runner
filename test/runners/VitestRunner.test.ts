@@ -18,26 +18,38 @@ describe('VitestRunner', () => {
   });
 
   it('should execute "vitest run --coverage" command when runCoverage() is called', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     mockExeca.mockResolvedValue({
       exitCode: 0,
       stdout: 'Test results output',
       stderr: '',
-    } as any);
+    } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
     const runner = new VitestRunner();
     await runner.runCoverage();
 
-    expect(mockExeca).toHaveBeenCalledWith('npx', ['vitest', 'run', '--coverage', '--coverage.reportsDirectory', './coverage'], {
-      stdio: 'pipe',
-    });
+    expect(mockExeca).toHaveBeenCalledWith(
+      'npx',
+      [
+        'vitest',
+        'run',
+        '--coverage',
+        '--coverage.reportsDirectory',
+        './coverage',
+      ],
+      {
+        stdio: 'pipe',
+      }
+    );
   });
 
   it('should return success result when vitest command succeeds', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     mockExeca.mockResolvedValue({
       exitCode: 0,
       stdout: 'Test results output',
       stderr: '',
-    } as any);
+    } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
     const runner = new VitestRunner();
     const result = await runner.runCoverage();
@@ -69,18 +81,29 @@ describe('VitestRunner', () => {
     const originalEnv = process.env.COVERAGE_OUTPUT_DIR;
     process.env.COVERAGE_OUTPUT_DIR = '/tmp/custom-coverage';
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     mockExeca.mockResolvedValue({
       exitCode: 0,
       stdout: '',
       stderr: '',
-    } as any);
+    } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
     const runner = new VitestRunner();
     await runner.runCoverage();
 
-    expect(mockExeca).toHaveBeenCalledWith('npx', ['vitest', 'run', '--coverage', '--coverage.reportsDirectory', '/tmp/custom-coverage'], {
-      stdio: 'pipe',
-    });
+    expect(mockExeca).toHaveBeenCalledWith(
+      'npx',
+      [
+        'vitest',
+        'run',
+        '--coverage',
+        '--coverage.reportsDirectory',
+        '/tmp/custom-coverage',
+      ],
+      {
+        stdio: 'pipe',
+      }
+    );
 
     // Restore original environment
     if (originalEnv !== undefined) {

@@ -20,7 +20,7 @@ describe('CLI Integration', () => {
   it('should detect runners and execute them in sequence', async () => {
     // Setup mocks
     mockDetectRunners.mockReturnValue(['jest', 'vitest']);
-    
+
     const mockJestInstance = {
       runCoverage: vi.fn().mockResolvedValue({
         success: true,
@@ -28,7 +28,7 @@ describe('CLI Integration', () => {
         duration: 1000,
       }),
     };
-    
+
     const mockVitestInstance = {
       runCoverage: vi.fn().mockResolvedValue({
         success: true,
@@ -36,9 +36,13 @@ describe('CLI Integration', () => {
         duration: 500,
       }),
     };
-    
-    MockJestRunner.mockImplementation(() => mockJestInstance as any);
-    MockVitestRunner.mockImplementation(() => mockVitestInstance as any);
+
+    MockJestRunner.mockImplementation(
+      () => mockJestInstance as unknown as JestRunner
+    );
+    MockVitestRunner.mockImplementation(
+      () => mockVitestInstance as unknown as VitestRunner
+    );
 
     // Simulate CLI execution flow
     const detectedRunners = detectRunners();
@@ -62,7 +66,7 @@ describe('CLI Integration', () => {
 
   it('should handle runner failure gracefully', async () => {
     mockDetectRunners.mockReturnValue(['jest']);
-    
+
     const mockJestInstance = {
       runCoverage: vi.fn().mockResolvedValue({
         success: false,
@@ -72,8 +76,10 @@ describe('CLI Integration', () => {
         duration: 1000,
       }),
     };
-    
-    MockJestRunner.mockImplementation(() => mockJestInstance as any);
+
+    MockJestRunner.mockImplementation(
+      () => mockJestInstance as unknown as JestRunner
+    );
 
     const detectedRunners = detectRunners();
     const firstRunner = detectedRunners[0];
@@ -90,7 +96,7 @@ describe('CLI Integration', () => {
 
   it('should handle case when no runners are detected', () => {
     mockDetectRunners.mockReturnValue([]);
-    
+
     const detectedRunners = detectRunners();
     expect(detectedRunners).toEqual([]);
   });
