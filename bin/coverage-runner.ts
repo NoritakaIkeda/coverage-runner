@@ -6,6 +6,7 @@ import { join } from 'path';
 import { setDebugMode, logger } from '../src/utils/logger';
 import { detectRunners } from '../src/utils/detectRunners';
 import { RunnerFactory } from '../src/runners/RunnerFactory';
+import { mergeCoverageFiles } from '../src/commands/mergeCoverage';
 
 function getVersion(): string {
   try {
@@ -92,6 +93,67 @@ function createCLI(): Command {
         console.log('\n🎉 Coverage analysis completed!');
       } catch (error) {
         logger.error('Failed to run coverage analysis:', error);
+        process.exit(1);
+      }
+    });
+
+  // Add merge command
+  program
+    .command('merge')
+    .description('Merge multiple coverage files into a single output')
+    .option('-i, --input <patterns...>', 'input coverage file patterns (e.g., "coverage/*.lcov" "coverage/*.xml")')
+    .option('-o, --output <dir>', 'output directory for merged coverage', 'coverage-merged')
+    .option('--json-only', 'output only JSON format (skip LCOV)')
+    .option('--normalize-paths', 'normalize file paths to handle different formats')
+    .option('--root-dir <dir>', 'root directory for path normalization')
+    .action(async (options: { 
+      input?: string[]; 
+      output: string; 
+      jsonOnly?: boolean; 
+      normalizePaths?: boolean; 
+      rootDir?: string; 
+    }) => {
+      if (program.opts().debug) {
+        setDebugMode(true);
+      }
+
+      try {
+        if (!options.input || options.input.length === 0) {
+          console.error('❌ No input files specified. Use -i/--input to specify coverage files.');
+          process.exit(1);
+        }
+
+        console.log('🔄 Merging coverage files...');
+        logger.debug(`Input patterns: ${options.input.join(', ')}`);
+        logger.debug(`Output directory: ${options.output}`);
+        logger.debug(`JSON only: ${options.jsonOnly || false}`);
+        logger.debug(`Normalize paths: ${options.normalizePaths || false}`);
+        
+        const result = await mergeCoverageFiles({
+          inputPatterns: options.input,
+          outputDir: options.output,
+          jsonOnly: options.jsonOnly || false,
+          normalizePaths: options.normalizePaths || false,
+          rootDir: options.rootDir,
+        });
+
+        if (result.success) {
+          console.log('✅ Coverage files merged successfully!');
+          console.log(`   📁 Output directory: ${result.outputDir}`);
+          console.log(`   📊 Files processed: ${result.filesProcessed}`);
+          console.log(`   📝 Unique files in output: ${result.uniqueFiles}`);
+          if (result.normalizedPaths) {
+            console.log(`   🔄 Paths normalized: ${result.normalizedPaths}`);
+          }
+        } else {
+          console.error('❌ Coverage merging failed');
+          if (result.error) {
+            console.error(`   Error: ${result.error}`);
+          }
+          process.exit(1);
+        }
+      } catch (error) {
+        logger.error('Failed to merge coverage files:', error);
         process.exit(1);
       }
     });

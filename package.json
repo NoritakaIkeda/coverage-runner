@@ -41,7 +41,13 @@
     ]
   },
   "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/istanbul-lib-coverage": "^2.0.6",
+    "@types/istanbul-lib-report": "^3.0.3",
+    "@types/istanbul-reports": "^3.0.4",
+    "@types/lcov-parse": "^1.0.2",
     "@types/node": "^24.0.10",
+    "@types/xml2js": "^0.4.14",
     "@typescript-eslint/eslint-plugin": "^8.35.1",
     "@typescript-eslint/parser": "^8.35.1",
     "@vitest/ui": "^3.2.4",
@@ -58,6 +64,12 @@
   },
   "dependencies": {
     "commander": "^14.0.0",
-    "execa": "^9.6.0"
+    "execa": "^9.6.0",
+    "glob": "^11.0.3",
+    "istanbul-lib-coverage": "^3.2.2",
+    "istanbul-lib-report": "^3.0.1",
+    "istanbul-reports": "^3.1.7",
+    "lcov-parse": "^1.0.0",
+    "xml2js": "^0.6.2"
   }
 }
