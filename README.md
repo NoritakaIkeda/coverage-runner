@@ -1,6 +1,49 @@
 # coverage-runner
 
-A tool for running and managing code coverage analysis.
+A unified CLI tool for running and managing code coverage analysis across different JavaScript/TypeScript projects and testing frameworks.
+
+## Overview
+
+Coverage-runner solves the problem of fragmented coverage tooling by providing a single, consistent interface for code coverage analysis. Instead of remembering different commands and configurations for various testing frameworks (Jest, Vitest, Mocha, etc.), coverage-runner automatically detects your project setup and runs the appropriate coverage tools with optimal settings.
+
+## Usage
+
+### Quick Start
+
+Run coverage analysis on any JavaScript/TypeScript project:
+
+```bash
+npx coverage-runner
+```
+
+### Installation
+
+For regular use, install globally:
+
+```bash
+npm install -g coverage-runner
+coverage-runner
+```
+
+## Features
+
+- **Automatic Detection**: Intelligently detects your testing framework and project configuration
+- **Unified Interface**: Single command works across Jest, Vitest, Mocha, and other popular testing tools
+- **Configuration Support**: Respects existing coverage configuration files
+- **Integration Ready**: Designed to work seamlessly in CI/CD pipelines
+- **Cross-Platform**: Works on Windows, macOS, and Linux
+
+## Status
+
+🚧 **Currently in Development** - This tool is under active development. Core functionality is being implemented and tested.
+
+## Roadmap
+
+- [x] CLI foundation and project structure
+- [ ] Framework auto-detection
+- [ ] Coverage execution engine
+- [ ] Configuration file support
+- [ ] CI/CD integration helpers
 
 ## Development
 

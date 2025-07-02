@@ -16,11 +16,11 @@
     "build": "tsc",
     "dev": "tsx src/index.ts",
     "start": "node dist/index.js",
-    "lint": "eslint src/**/*.ts bin/**/*.ts",
-    "lint:fix": "eslint src/**/*.ts bin/**/*.ts --fix",
-    "format": "prettier --write src/**/*.ts bin/**/*.ts",
+    "lint": "eslint src/**/*.ts bin/**/*.ts test/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts bin/**/*.ts test/**/*.ts --fix",
+    "format": "prettier --write src/**/*.ts bin/**/*.ts test/**/*.ts",
     "typecheck": "tsc --noEmit",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
     "prepare": "husky"
   },
   "repository": {
@@ -44,6 +44,7 @@
     "@types/node": "^24.0.10",
     "@typescript-eslint/eslint-plugin": "^8.35.1",
     "@typescript-eslint/parser": "^8.35.1",
+    "@vitest/ui": "^3.2.4",
     "eslint": "^9.30.1",
     "eslint-config-prettier": "^10.1.5",
     "husky": "^9.1.7",
@@ -52,7 +53,8 @@
     "prettier": "^3.6.2",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.3",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
   },
   "dependencies": {
     "commander": "^14.0.0"
