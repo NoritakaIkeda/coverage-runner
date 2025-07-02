@@ -6,9 +6,10 @@ This is a coverage runner tool that supports multiple test frameworks like Jest 
 
 ## Development Commands
 
-- `pnpm run lint` - Run linting and fix issues
-- `pnpm run test` - Run tests
-- `pnpm run build` - Build the project
+- `npm run lint` - Run linting and fix issues  
+- `npm run test` - Run tests (Vitest)
+- `npm run test:ci` - Run CI-compatible tests
+- `npm run build` - Build the project
 
 ## Development Practices
 

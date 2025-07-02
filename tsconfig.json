@@ -36,8 +36,7 @@
   "include": [
     "src/**/*",
     "bin/**/*",
-    "test/**/*",
-    "vitest.config.ts"
+    "test/**/*"
   ],
   "exclude": [
     "node_modules",
