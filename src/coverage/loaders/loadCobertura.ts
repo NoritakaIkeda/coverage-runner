@@ -1,3 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import * as fs from 'fs';
 import { createCoverageMap, CoverageMap } from 'istanbul-lib-coverage';
 import * as xml2js from 'xml2js';
@@ -29,33 +35,41 @@ export function loadCobertura(filePath: string): CoverageMap {
     }
 
     const coverage = parsedData.coverage;
-    
+
     // Handle packages
     if (coverage.packages && coverage.packages.package) {
-      const packages = Array.isArray(coverage.packages.package) 
-        ? coverage.packages.package 
+      const packages = Array.isArray(coverage.packages.package)
+        ? coverage.packages.package
         : [coverage.packages.package];
 
       for (const pkg of packages) {
         if (pkg.classes && pkg.classes.class) {
-          const classes = Array.isArray(pkg.classes.class) 
-            ? pkg.classes.class 
+          const classes = Array.isArray(pkg.classes.class)
+            ? pkg.classes.class
             : [pkg.classes.class];
 
           for (const cls of classes) {
             const fileName = cls.$.filename || cls.$.name;
-            
+
             if (!fileName) {
               continue;
             }
 
             // Build statement map and hit counts from line data
-            const statementMap: Record<string, { start: { line: number; column: number }; end: { line: number; column: number } }> = {};
+            const statementMap: Record<
+              string,
+              {
+                start: { line: number; column: number };
+                end: { line: number; column: number };
+              }
+            > = {};
             const s: Record<string, number> = {};
 
             if (cls.lines && cls.lines.line) {
-              const lines = Array.isArray(cls.lines.line) ? cls.lines.line : [cls.lines.line];
-              
+              const lines = Array.isArray(cls.lines.line)
+                ? cls.lines.line
+                : [cls.lines.line];
+
               lines.forEach((line: any, index: number) => {
                 const statementId = index.toString();
                 const lineNumber = parseInt(line.$.number, 10);

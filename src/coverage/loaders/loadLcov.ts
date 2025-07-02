@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import * as fs from 'fs';
 import { createCoverageMap, CoverageMap } from 'istanbul-lib-coverage';
 import { logger } from '../../utils/logger';
@@ -11,24 +12,30 @@ export function loadLcov(filePath: string): CoverageMap {
 
   try {
     const lcovContent = fs.readFileSync(filePath, 'utf-8');
-    
+
     if (!lcovContent.trim()) {
       logger.debug('LCOV file is empty, returning empty coverage map');
       return createCoverageMap();
     }
 
     const coverageMap = createCoverageMap();
-    
+
     // Simple LCOV parser - parse line by line
     const lines = lcovContent.split('\n');
     let currentFile: string | null = null;
-    let statementMap: Record<string, { start: { line: number; column: number }; end: { line: number; column: number } }> = {};
+    let statementMap: Record<
+      string,
+      {
+        start: { line: number; column: number };
+        end: { line: number; column: number };
+      }
+    > = {};
     let s: Record<string, number> = {};
     let statementIndex = 0;
 
     for (const line of lines) {
       const trimmedLine = line.trim();
-      
+
       if (trimmedLine.startsWith('SF:')) {
         // Source file
         currentFile = trimmedLine.substring(3);
@@ -41,7 +48,7 @@ export function loadLcov(filePath: string): CoverageMap {
         if (parts.length >= 2) {
           const lineNumber = parseInt(parts[0] || '0', 10);
           const hitCount = parseInt(parts[1] || '0', 10);
-          
+
           const statementId = statementIndex.toString();
           statementMap[statementId] = {
             start: { line: lineNumber, column: 0 },
