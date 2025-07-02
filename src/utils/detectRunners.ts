@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { logger } from './logger';
+import { logger } from './logger.js';
 
 export type TestRunner = 'jest' | 'vitest' | 'mocha' | 'ava';
 

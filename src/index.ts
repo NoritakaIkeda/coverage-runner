@@ -2,6 +2,7 @@ export function main(): void {
   console.log('Hello, Coverage Runner!');
 }
 
-if (require.main === module) {
+// ESM equivalent of require.main === module
+if (import.meta.url === `file://${process.argv[1]}`) {
   main();
 }

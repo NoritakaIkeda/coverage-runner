@@ -1,9 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
+
 import * as fs from 'fs';
-import { createCoverageMap, CoverageMap } from 'istanbul-lib-coverage';
-import { logger } from '../../utils/logger';
+import istanbulLibCoverage from 'istanbul-lib-coverage';
+import { logger } from '../../utils/logger.js';
+
+const { createCoverageMap } = istanbulLibCoverage;
+type CoverageMap = istanbulLibCoverage.CoverageMap;
 
 export function loadIstanbulJson(filePath: string): CoverageMap {
   logger.debug(`Loading Istanbul JSON file: ${filePath}`);

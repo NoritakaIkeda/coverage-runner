@@ -1,0 +1,108 @@
+name: Quality Monitoring
+
+on:
+  schedule:
+    # Run daily at 9 AM UTC
+    - cron: '0 9 * * *'
+  workflow_dispatch: # Allow manual triggers
+
+jobs:
+  quality-audit:
+    runs-on: ubuntu-latest
+    name: Daily Quality Audit
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Full project validation
+        run: |
+          echo "🔍 Starting comprehensive quality audit..."
+          
+          # Count TypeScript files
+          TS_FILES=$(find . -name "*.ts" -not -path "./node_modules/*" -not -path "./dist/*" | wc -l)
+          echo "📄 Total TypeScript files: $TS_FILES"
+          
+          # Run quality checks
+          npm run typecheck
+          
+          # Check for any type safety violations
+          npm run lint 2>&1 | tee full-lint-report.log
+          ERROR_COUNT=$(grep -c "error" full-lint-report.log || echo "0")
+          WARNING_COUNT=$(grep -c "warning" full-lint-report.log || echo "0")
+          
+          echo "📊 Quality Metrics:"
+          echo "   - TypeScript files: $TS_FILES"
+          echo "   - ESLint errors: $ERROR_COUNT"  
+          echo "   - ESLint warnings: $WARNING_COUNT"
+          
+          # Fail if any errors found
+          if [ "$ERROR_COUNT" -gt 0 ]; then
+            echo "❌ Quality audit failed: $ERROR_COUNT errors found"
+            exit 1
+          fi
+          
+          echo "✅ Quality audit passed"
+
+      - name: Archive quality report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-audit-report
+          path: full-lint-report.log
+
+  security-check:
+    runs-on: ubuntu-latest
+    name: Security Audit
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: |
+          echo "🔒 Running security audit..."
+          npm audit --audit-level=high
+          
+      - name: Check for hardcoded secrets
+        run: |
+          echo "🔍 Checking for potential secrets..."
+          
+          # Basic patterns to avoid
+          PATTERNS=(
+            "password.*=.*['\"][^'\"]*['\"]"
+            "api[_-]?key.*=.*['\"][^'\"]*['\"]"
+            "secret.*=.*['\"][^'\"]*['\"]"
+            "token.*=.*['\"][^'\"]*['\"]"
+          )
+          
+          FOUND_ISSUES=0
+          for pattern in "${PATTERNS[@]}"; do
+            if grep -r -i -E "$pattern" src/ test/ bin/ 2>/dev/null; then
+              echo "⚠️  Potential secret pattern found: $pattern"
+              FOUND_ISSUES=1
+            fi
+          done
+          
+          if [ $FOUND_ISSUES -eq 0 ]; then
+            echo "✅ No hardcoded secrets detected"
+          else
+            echo "❌ Potential security issues found"
+            exit 1
+          fi

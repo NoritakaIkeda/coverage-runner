@@ -3,11 +3,14 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
+
 import * as fs from 'fs';
-import { createCoverageMap, CoverageMap } from 'istanbul-lib-coverage';
+import istanbulLibCoverage from 'istanbul-lib-coverage';
 import * as xml2js from 'xml2js';
-import { logger } from '../../utils/logger';
+import { logger } from '../../utils/logger.js';
+
+const { createCoverageMap } = istanbulLibCoverage;
+type CoverageMap = istanbulLibCoverage.CoverageMap;
 
 export function loadCobertura(filePath: string): CoverageMap {
   logger.debug(`Loading Cobertura XML file: ${filePath}`);
@@ -29,7 +32,7 @@ export function loadCobertura(filePath: string): CoverageMap {
       parsedData = result;
     });
 
-    if (!parsedData || !parsedData.coverage) {
+    if (!parsedData?.coverage) {
       logger.debug('No coverage data found in Cobertura XML');
       return coverageMap;
     }
@@ -37,13 +40,13 @@ export function loadCobertura(filePath: string): CoverageMap {
     const coverage = parsedData.coverage;
 
     // Handle packages
-    if (coverage.packages && coverage.packages.package) {
+    if (coverage.packages?.package) {
       const packages = Array.isArray(coverage.packages.package)
         ? coverage.packages.package
         : [coverage.packages.package];
 
       for (const pkg of packages) {
-        if (pkg.classes && pkg.classes.class) {
+        if (pkg.classes?.class) {
           const classes = Array.isArray(pkg.classes.class)
             ? pkg.classes.class
             : [pkg.classes.class];
@@ -65,7 +68,7 @@ export function loadCobertura(filePath: string): CoverageMap {
             > = {};
             const s: Record<string, number> = {};
 
-            if (cls.lines && cls.lines.line) {
+            if (cls.lines?.line) {
               const lines = Array.isArray(cls.lines.line)
                 ? cls.lines.line
                 : [cls.lines.line];

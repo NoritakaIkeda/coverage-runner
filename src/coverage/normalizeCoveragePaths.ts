@@ -4,8 +4,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 import * as path from 'path';
-import { createCoverageMap, CoverageMap } from 'istanbul-lib-coverage';
-import { logger } from '../utils/logger';
+import istanbulLibCoverage from 'istanbul-lib-coverage';
+import { logger } from '../utils/logger.js';
+
+const { createCoverageMap } = istanbulLibCoverage;
+type CoverageMap = istanbulLibCoverage.CoverageMap;
 
 export function normalizeCoveragePaths(
   coverageMap: CoverageMap,

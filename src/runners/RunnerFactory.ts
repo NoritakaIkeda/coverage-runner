@@ -1,8 +1,8 @@
-import { TestRunner } from '../utils/detectRunners';
-import { Runner } from './Runner';
-import { JestRunner } from './JestRunner';
-import { VitestRunner } from './VitestRunner';
-import { DummyRunner } from './DummyRunner';
+import { TestRunner } from '../utils/detectRunners.js';
+import { Runner } from './Runner.js';
+import { JestRunner } from './JestRunner.js';
+import { VitestRunner } from './VitestRunner.js';
+import { DummyRunner } from './DummyRunner.js';
 
 export class RunnerFactory {
   static createRunner(runnerType: TestRunner): Runner {
