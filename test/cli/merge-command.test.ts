@@ -55,7 +55,10 @@ end_of_record`;
   it('should merge coverage files using CLI command function', async () => {
     // Act: Use the CLI command function directly
     const result = await mergeCoverageFiles({
-      inputPatterns: [path.join(inputDir, '*.lcov'), path.join(inputDir, '*.json')],
+      inputPatterns: [
+        path.join(inputDir, '*.lcov'),
+        path.join(inputDir, '*.json'),
+      ],
       outputDir,
       jsonOnly: false,
       normalizePaths: true,
@@ -74,7 +77,10 @@ end_of_record`;
     expect(fs.existsSync(lcovFile)).toBe(true);
 
     // Verify content
-    const mergedJson = JSON.parse(fs.readFileSync(jsonFile, 'utf-8')) as Record<string, FileCoverageData>;
+    const mergedJson = JSON.parse(fs.readFileSync(jsonFile, 'utf-8')) as Record<
+      string,
+      FileCoverageData
+    >;
     const fileKeys = Object.keys(mergedJson);
     expect(fileKeys.length).toBe(2);
     expect(fileKeys.some(key => key.includes('app.ts'))).toBe(true);
@@ -106,14 +112,16 @@ end_of_record`;
     // Assert: Path normalization should work
     expect(result.success).toBe(true);
     expect(result.filesProcessed).toBeGreaterThanOrEqual(2);
-    
-    const mergedJson = JSON.parse(fs.readFileSync(path.join(outputDir, 'coverage-merged.json'), 'utf-8')) as Record<string, FileCoverageData>;
+
+    const mergedJson = JSON.parse(
+      fs.readFileSync(path.join(outputDir, 'coverage-merged.json'), 'utf-8')
+    ) as Record<string, FileCoverageData>;
     const fileKeys = Object.keys(mergedJson);
-    
+
     // Should have normalized the paths - either 1 or 2 files depending on how the normalization worked
     expect(fileKeys.length).toBeGreaterThanOrEqual(1);
     expect(fileKeys.length).toBeLessThanOrEqual(2);
-    
+
     // At least one file should contain 'shared.ts'
     expect(fileKeys.some(key => key.includes('shared.ts'))).toBe(true);
   });
@@ -121,14 +129,17 @@ end_of_record`;
   it('should handle JSON-only output', async () => {
     // Act: Merge with JSON-only option
     const result = await mergeCoverageFiles({
-      inputPatterns: [path.join(inputDir, '*.lcov'), path.join(inputDir, '*.json')],
+      inputPatterns: [
+        path.join(inputDir, '*.lcov'),
+        path.join(inputDir, '*.json'),
+      ],
       outputDir,
       jsonOnly: true,
     });
 
     // Assert: Should create only JSON file
     expect(result.success).toBe(true);
-    
+
     const jsonFile = path.join(outputDir, 'coverage-merged.json');
     const lcovFile = path.join(outputDir, 'coverage-merged.lcov');
 

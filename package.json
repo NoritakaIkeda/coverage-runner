@@ -21,7 +21,10 @@
     "format": "prettier --write src/**/*.ts bin/**/*.ts test/**/*.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "prepare": "husky"
+    "prepare": "husky",
+    "validate:all": "node scripts/validate-new-files.js && node scripts/validate-workflow.js",
+    "quality:check": "npm run validate:all && npm run typecheck && npm run lint && npm run test",
+    "quality:audit": "npm run quality:check && echo '✅ Full quality audit passed'"
   },
   "repository": {
     "type": "git",

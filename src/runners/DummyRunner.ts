@@ -7,10 +7,10 @@ export class DummyRunner extends BaseRunner {
 
   async runCoverage(): Promise<CoverageResult> {
     const startTime = Date.now();
-    
+
     // Simulate minimal processing time
     await new Promise(resolve => setTimeout(resolve, 1));
-    
+
     const endTime = Date.now();
     const duration = endTime - startTime;
 

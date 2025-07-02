@@ -11,9 +11,9 @@ describe('DummyRunner', () => {
   it('should return a resolved Promise when runCoverage() is called', async () => {
     const runner = new DummyRunner();
     const result = runner.runCoverage();
-    
+
     expect(result).toBeInstanceOf(Promise);
-    
+
     const coverageResult = await result;
     expect(coverageResult).toBeDefined();
     expect(coverageResult.success).toBe(true);
@@ -23,9 +23,9 @@ describe('DummyRunner', () => {
   it('should complete within reasonable time', async () => {
     const runner = new DummyRunner();
     const startTime = Date.now();
-    
+
     await runner.runCoverage();
-    
+
     const endTime = Date.now();
     expect(endTime - startTime).toBeLessThan(100); // Should be near-instant for dummy
   });

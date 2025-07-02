@@ -89,9 +89,9 @@ describe('writeMergedCoverage', () => {
     const mergedCoverage = mergeCoverage([coverage]);
 
     // Act: Write merged coverage with jsonOnly option
-    writeMergedCoverage(mergedCoverage, { 
-      outDir: testOutputDir, 
-      jsonOnly: true 
+    writeMergedCoverage(mergedCoverage, {
+      outDir: testOutputDir,
+      jsonOnly: true,
     });
 
     // Assert: Check that only JSON file is created
@@ -176,7 +176,7 @@ describe('writeMergedCoverage', () => {
 
     // Assert: Check that directory and files are created
     expect(fs.existsSync(nonExistentDir)).toBe(true);
-    
+
     const jsonFile = path.join(nonExistentDir, 'coverage-merged.json');
     expect(fs.existsSync(jsonFile)).toBe(true);
   });

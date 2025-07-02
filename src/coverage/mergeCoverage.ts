@@ -1,4 +1,8 @@
-import { createCoverageMap, CoverageMap, CoverageMapData } from 'istanbul-lib-coverage';
+import {
+  createCoverageMap,
+  CoverageMap,
+  CoverageMapData,
+} from 'istanbul-lib-coverage';
 
 export type CoverageData = CoverageMapData;
 
