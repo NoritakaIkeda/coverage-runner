@@ -1,9 +1,12 @@
 {
   "name": "coverage-runner",
   "version": "1.0.0",
-  "description": "",
+  "description": "A tool for running and managing code coverage analysis",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "coverage-runner": "./dist/bin/coverage-runner.js"
+  },
   "directories": {
     "doc": "docs",
     "lib": "lib",
@@ -13,9 +16,9 @@
     "build": "tsc",
     "dev": "tsx src/index.ts",
     "start": "node dist/index.js",
-    "lint": "eslint src/**/*.ts",
-    "lint:fix": "eslint src/**/*.ts --fix",
-    "format": "prettier --write src/**/*.ts",
+    "lint": "eslint src/**/*.ts bin/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts bin/**/*.ts --fix",
+    "format": "prettier --write src/**/*.ts bin/**/*.ts",
     "typecheck": "tsc --noEmit",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky"
@@ -50,5 +53,8 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "commander": "^14.0.0"
   }
 }
