@@ -1,0 +1,13 @@
+{
+  "name": "jest-sample",
+  "version": "1.0.0",
+  "description": "Sample project for testing Jest coverage",
+  "scripts": {
+    "test": "jest",
+    "test:coverage": "jest --coverage"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "@types/jest": "^29.0.0"
+  }
+}

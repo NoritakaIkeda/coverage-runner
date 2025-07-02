@@ -3,8 +3,9 @@
 import { Command } from 'commander';
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { setDebugMode } from '../src/utils/logger';
+import { setDebugMode, logger } from '../src/utils/logger';
 import { detectRunners } from '../src/utils/detectRunners';
+import { RunnerFactory } from '../src/runners/RunnerFactory';
 
 function getVersion(): string {
   try {
@@ -42,6 +43,56 @@ function createCLI(): Command {
         console.log(`Detected test runners: ${runners.join(', ')}`);
       } else {
         console.log('No test runners detected');
+      }
+    });
+
+  // Add run command
+  program
+    .command('run')
+    .description('Run coverage analysis for detected test runners')
+    .option('-p, --path <path>', 'path to package.json file')
+    .action(async (options: { path?: string }) => {
+      if (program.opts().debug) {
+        setDebugMode(true);
+      }
+
+      try {
+        const runners = detectRunners(options.path);
+
+        if (runners.length === 0) {
+          console.log('No test runners detected. Skipping coverage analysis.');
+          return;
+        }
+
+        console.log(`Running coverage analysis for: ${runners.join(', ')}`);
+
+        for (const runnerType of runners) {
+          try {
+            console.log(`\n🏃 Running ${runnerType} coverage...`);
+            const runner = RunnerFactory.createRunner(runnerType);
+            const result = await runner.runCoverage();
+
+            if (result.success) {
+              console.log(`✅ ${runnerType} coverage completed successfully`);
+              console.log(`   Output: ${result.outputPath}`);
+              if (result.duration) {
+                console.log(`   Duration: ${result.duration}ms`);
+              }
+            } else {
+              console.error(`❌ ${runnerType} coverage failed (exit code: ${result.exitCode})`);
+              if (result.stderr) {
+                console.error(`   Error: ${result.stderr}`);
+              }
+            }
+          } catch (error) {
+            console.error(`❌ Failed to run ${runnerType}:`, error);
+          }
+        }
+
+        console.log('\n🎉 Coverage analysis completed!');
+      } catch (error) {
+        logger.error('Failed to run coverage analysis:', error);
+        process.exit(1);
       }
     });
 

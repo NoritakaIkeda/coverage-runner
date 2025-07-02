@@ -14,21 +14,34 @@
     "declarationMap": true,
     "sourceMap": true,
     "removeComments": true,
+    // 既存の厳密なチェック
     "noImplicitAny": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true
+    "exactOptionalPropertyTypes": true,
+    // 追加の厳密なチェック（段階的導入）
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": false, // 段階的導入のため一時的に無効
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    "noImplicitThis": true,
+    "useUnknownInCatchVariables": false, // 段階的導入のため一時的に無効
+    // より厳密な型チェック
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": false // 段階的導入のため一時的に無効
   },
   "include": [
     "src/**/*",
     "bin/**/*",
-    "test/**/*"
+    "test/**/*",
+    "vitest.config.ts"
   ],
   "exclude": [
     "node_modules",
-    "dist"
+    "dist",
+    "examples"
   ]
 }
