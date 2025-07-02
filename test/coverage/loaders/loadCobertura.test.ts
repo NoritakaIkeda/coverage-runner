@@ -55,9 +55,10 @@ describe('loadCobertura', () => {
 
     // Assert: Check that coverage map contains expected data
     expect(result.data).toHaveProperty('example.ts');
-    
+
     const fileData = result.data['example.ts'];
-    expect(fileData.path).toBe('example.ts');
+    expect(fileData).toBeDefined();
+    expect(fileData?.path).toBe('example.ts');
   });
 
   it('should handle empty Cobertura XML', () => {

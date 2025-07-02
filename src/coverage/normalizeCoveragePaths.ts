@@ -29,9 +29,10 @@ export function normalizeCoveragePaths(
 
   // Process each group
   for (const [normalizedPath, originalPaths] of pathGroups) {
-    if (originalPaths.length === 1) {
+    if (originalPaths.length === 1 && originalPaths[0]) {
       // Single file, just add with normalized path
       const originalFileCoverage = coverageMap.data[originalPaths[0]];
+      if (!originalFileCoverage) continue;
       const actualData =
         (originalFileCoverage as any).data || originalFileCoverage;
       const normalizedFileCoverage = { ...actualData } as any;
@@ -52,14 +53,20 @@ export function normalizeCoveragePaths(
       );
 
       // Create individual coverage maps for each file and merge them
-      const baseFileCoverage = coverageMap.data[originalPaths[0]];
+      const firstPath = originalPaths[0];
+      if (!firstPath) continue;
+      const baseFileCoverage = coverageMap.data[firstPath];
+      if (!baseFileCoverage) continue;
       const baseData = (baseFileCoverage as any).data || baseFileCoverage;
       let mergedData = { ...baseData } as any;
       mergedData.path = normalizedPath;
 
       // Merge data from other files
       for (let i = 1; i < originalPaths.length; i++) {
-        const otherFileCoverage = coverageMap.data[originalPaths[i]];
+        const otherPath = originalPaths[i];
+        if (!otherPath) continue;
+        const otherFileCoverage = coverageMap.data[otherPath];
+        if (!otherFileCoverage) continue;
         const otherData = (otherFileCoverage as any).data || otherFileCoverage;
 
         // Merge statement hit counts
@@ -89,17 +96,18 @@ export function normalizeCoveragePaths(
           (otherData as any).b || {}
         )) {
           if (
-            mergedData.b &&
-            mergedData.b[branchId] &&
+            mergedData.b?.[branchId] &&
             Array.isArray(branchHits) &&
             Array.isArray(mergedData.b[branchId])
           ) {
             const existingBranch = mergedData.b[branchId] as number[];
             for (let j = 0; j < (branchHits as number[]).length; j++) {
-              if (existingBranch[j] !== undefined) {
-                existingBranch[j] += (branchHits as number[])[j] || 0;
+              const branchHit = (branchHits as number[])[j];
+              const currentValue = existingBranch[j];
+              if (currentValue !== undefined) {
+                existingBranch[j] = currentValue + (branchHit ?? 0);
               } else {
-                existingBranch[j] = (branchHits as number[])[j] || 0;
+                existingBranch[j] = branchHit ?? 0;
               }
             }
           } else if (mergedData.b) {

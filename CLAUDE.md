@@ -37,6 +37,65 @@ When implementing new features, follow Test-Driven Development practices:
 - Ensure comprehensive test coverage
 - Handle errors properly with appropriate type casting
 
+## Type Safety & Quality Assurance
+
+### 厳格な型安全性設定
+
+このプロジェクトでは、型安全性エラーの再発を防ぐため以下の厳格な設定を採用しています：
+
+#### ESLint 厳格ルール
+- `@typescript-eslint/no-unsafe-assignment`: error
+- `@typescript-eslint/no-unsafe-call`: error  
+- `@typescript-eslint/no-unsafe-member-access`: error
+- `@typescript-eslint/no-unsafe-argument`: error
+- `@typescript-eslint/restrict-template-expressions`: error
+
+#### TypeScript 厳密設定
+- `noImplicitOverride`: true - オーバーライドの明示化
+- `noPropertyAccessFromIndexSignature`: true - インデックス署名へのアクセス制限
+- `useUnknownInCatchVariables`: true - catch文での型安全性
+- `strictPropertyInitialization`: true - プロパティ初期化の厳格化
+
+### Pre-commit Hooks
+
+コミット前に以下のチェックが自動実行されます：
+1. TypeScript type checking (`npm run typecheck`)
+2. ESLint validation (`npm run lint`)  
+3. Unit tests (`npm run test`)
+4. Lint-staged for staged files
+
+### CI/CD パイプライン
+
+GitHub Actionsで以下の段階的チェックを実行：
+1. **Code Quality Checks** - TypeScript, ESLint, Prettier
+2. **Test Suite** - 単体テスト + カバレッジ
+3. **Build Test** - ビルド成功確認
+4. **Multi-Node Test** - Node.js 16, 18, 20での動作確認
+
+### トラブルシューティング
+
+#### 型安全性エラーが発生した場合
+1. `any` 型の使用を避け、適切な型アサーションを使用
+2. 型ガード関数を作成して型安全性を確保
+3. Istanbul-lib-coverage等の複雑な型は `.toJSON()` メソッドを活用
+
+#### ローカルとCI環境での違い
+- 両環境で同じESLint設定を使用
+- pre-commit hookで事前チェック
+- package.jsonのscriptsを統一使用
+
+#### Pre-commit hookが失敗する場合
+```bash
+# 手動でチェック実行
+npm run typecheck
+npm run lint  
+npm run test
+
+# 修正後、再コミット
+git add .
+git commit -m "fix: resolve type safety issues"
+```
+
 ## Recent Work
 
 - Implemented coverage runners with TDD approach

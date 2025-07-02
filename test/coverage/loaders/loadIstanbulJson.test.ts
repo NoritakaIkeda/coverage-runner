@@ -29,7 +29,14 @@ describe('loadIstanbulJson', () => {
           '1': { start: { line: 2, column: 0 }, end: { line: 2, column: 15 } },
         },
         fnMap: {
-          '0': { name: 'exampleFunction', line: 1, decl: { start: { line: 1, column: 0 }, end: { line: 1, column: 15 } } },
+          '0': {
+            name: 'exampleFunction',
+            line: 1,
+            decl: {
+              start: { line: 1, column: 0 },
+              end: { line: 1, column: 15 },
+            },
+          },
         },
         branchMap: {},
         s: { '0': 3, '1': 1 },
@@ -45,12 +52,13 @@ describe('loadIstanbulJson', () => {
 
     // Assert: Check that coverage map contains expected data
     expect(result.data).toHaveProperty('/src/example.ts');
-    
+
     const fileData = result.data['/src/example.ts'];
-    expect(fileData.path).toBe('/src/example.ts');
-    expect(fileData.s['0']).toBe(3);
-    expect(fileData.s['1']).toBe(1);
-    expect(fileData.f['0']).toBe(3);
+    expect(fileData).toBeDefined();
+    expect(fileData?.path).toBe('/src/example.ts');
+    expect(fileData?.s['0']).toBe(3);
+    expect(fileData?.s['1']).toBe(1);
+    expect(fileData?.f['0']).toBe(3);
   });
 
   it('should handle empty Istanbul JSON', () => {
@@ -86,7 +94,9 @@ describe('loadIstanbulJson', () => {
     const istanbulData = {
       '/src/file1.ts': {
         path: '/src/file1.ts',
-        statementMap: { '0': { start: { line: 1, column: 0 }, end: { line: 1, column: 5 } } },
+        statementMap: {
+          '0': { start: { line: 1, column: 0 }, end: { line: 1, column: 5 } },
+        },
         fnMap: {},
         branchMap: {},
         s: { '0': 2 },
@@ -95,7 +105,9 @@ describe('loadIstanbulJson', () => {
       },
       '/src/file2.ts': {
         path: '/src/file2.ts',
-        statementMap: { '0': { start: { line: 1, column: 0 }, end: { line: 1, column: 8 } } },
+        statementMap: {
+          '0': { start: { line: 1, column: 0 }, end: { line: 1, column: 8 } },
+        },
         fnMap: {},
         branchMap: {},
         s: { '0': 5 },
