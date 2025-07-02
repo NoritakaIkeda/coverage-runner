@@ -14,13 +14,16 @@ export interface Runner {
 export abstract class BaseRunner implements Runner {
   protected outputDir: string;
 
-  constructor(outputDir: string = './coverage') {
+  constructor(outputDir = './coverage') {
     this.outputDir = process.env.COVERAGE_OUTPUT_DIR || outputDir;
   }
 
   abstract runCoverage(): Promise<CoverageResult>;
 
-  protected createSuccessResult(outputPath: string, duration?: number): CoverageResult {
+  protected createSuccessResult(
+    outputPath: string,
+    duration?: number
+  ): CoverageResult {
     const result: CoverageResult = {
       success: true,
       outputPath,
