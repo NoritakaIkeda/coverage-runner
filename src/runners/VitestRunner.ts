@@ -3,9 +3,9 @@ import { BaseRunner, CoverageResult } from './Runner.js';
 import { logger } from '../utils/logger.js';
 
 export class VitestRunner extends BaseRunner {
-  public readonly command?: string | undefined;
+  public readonly command: string | undefined;
 
-  constructor(command?: string | undefined) {
+  constructor(command?: string) {
     super('./coverage');
     this.command = command;
   }

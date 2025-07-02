@@ -6,9 +6,9 @@ import { DummyRunner } from './DummyRunner.js';
 import type { Config } from '../types/config.js';
 
 export class RunnerFactory {
-  private config?: Config | undefined;
+  private config: Config | undefined;
 
-  constructor(config?: Config | undefined) {
+  constructor(config?: Config) {
     this.config = config;
   }
 

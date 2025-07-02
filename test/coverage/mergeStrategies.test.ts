@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { promises as fs } from 'fs'
 import { join } from 'path'
 import { tmpdir } from 'os'
+import { createCoverageMap } from 'istanbul-lib-coverage'
 import { executeWithMergeStrategy } from '../../src/coverage/mergeStrategies.js'
 import type { Config } from '../../src/types/config.js'
 
@@ -22,7 +23,7 @@ describe('executeWithMergeStrategy', () => {
     }
 
     // Create mock coverage files
-    const jestCoverage = {
+    const jestCoverage = createCoverageMap({
       '/project/src/index.ts': {
         path: '/project/src/index.ts',
         statementMap: { '0': { start: { line: 1, column: 0 }, end: { line: 1, column: 10 } } },
@@ -32,9 +33,9 @@ describe('executeWithMergeStrategy', () => {
         f: {},
         b: {}
       }
-    }
+    })
 
-    const vitestCoverage = {
+    const vitestCoverage = createCoverageMap({
       '/project/src/utils.ts': {
         path: '/project/src/utils.ts',
         statementMap: { '0': { start: { line: 1, column: 0 }, end: { line: 1, column: 10 } } },
@@ -44,7 +45,7 @@ describe('executeWithMergeStrategy', () => {
         f: {},
         b: {}
       }
-    }
+    })
 
     const runnerResults = [
       { runner: 'jest', coverageMap: jestCoverage },
@@ -71,7 +72,7 @@ describe('executeWithMergeStrategy', () => {
       mergeStrategy: 'separate'
     }
 
-    const jestCoverage = {
+    const jestCoverage = createCoverageMap({
       '/project/src/index.ts': {
         path: '/project/src/index.ts',
         statementMap: { '0': { start: { line: 1, column: 0 }, end: { line: 1, column: 10 } } },
@@ -81,9 +82,9 @@ describe('executeWithMergeStrategy', () => {
         f: {},
         b: {}
       }
-    }
+    })
 
-    const vitestCoverage = {
+    const vitestCoverage = createCoverageMap({
       '/project/src/utils.ts': {
         path: '/project/src/utils.ts',
         statementMap: { '0': { start: { line: 1, column: 0 }, end: { line: 1, column: 10 } } },
@@ -93,7 +94,7 @@ describe('executeWithMergeStrategy', () => {
         f: {},
         b: {}
       }
-    }
+    })
 
     const runnerResults = [
       { runner: 'jest', coverageMap: jestCoverage },
@@ -123,7 +124,7 @@ describe('executeWithMergeStrategy', () => {
   it('should default to "merge" strategy when not specified', async () => {
     const config: Config = {}
 
-    const jestCoverage = {
+    const jestCoverage = createCoverageMap({
       '/project/src/index.ts': {
         path: '/project/src/index.ts',
         statementMap: { '0': { start: { line: 1, column: 0 }, end: { line: 1, column: 10 } } },
@@ -133,7 +134,7 @@ describe('executeWithMergeStrategy', () => {
         f: {},
         b: {}
       }
-    }
+    })
 
     const runnerResults = [
       { runner: 'jest', coverageMap: jestCoverage }
@@ -153,7 +154,7 @@ describe('executeWithMergeStrategy', () => {
       excludePatterns: ['**/*.spec.ts']
     }
 
-    const jestCoverage = {
+    const jestCoverage = createCoverageMap({
       '/project/src/index.ts': {
         path: '/project/src/index.ts',
         statementMap: { '0': { start: { line: 1, column: 0 }, end: { line: 1, column: 10 } } },
@@ -172,7 +173,7 @@ describe('executeWithMergeStrategy', () => {
         f: {},
         b: {}
       }
-    }
+    })
 
     const runnerResults = [
       { runner: 'jest', coverageMap: jestCoverage }

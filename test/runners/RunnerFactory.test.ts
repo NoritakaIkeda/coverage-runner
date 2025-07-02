@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { RunnerFactory } from '../../src/runners/RunnerFactory.js'
 import type { Config } from '../../src/types/config.js'
 
@@ -17,7 +17,7 @@ describe('RunnerFactory with config overrides', () => {
     expect(runner.constructor.name).toBe('JestRunner')
     
     // Check that the runner has the custom command
-    const runnerWithCommand = runner as any
+    const runnerWithCommand = runner as { command?: string }
     expect(runnerWithCommand.command).toBe("jest --config custom.config.js")
   })
 
@@ -35,7 +35,7 @@ describe('RunnerFactory with config overrides', () => {
     expect(runner.constructor.name).toBe('VitestRunner')
     
     // Check that the runner has the custom command
-    const runnerWithCommand = runner as any
+    const runnerWithCommand = runner as { command?: string }
     expect(runnerWithCommand.command).toBe("vitest --config vitest.custom.config.js")
   })
 
@@ -50,8 +50,8 @@ describe('RunnerFactory with config overrides', () => {
     expect(vitestRunner).toBeDefined()
     
     // Should use default commands (no custom command set)
-    const jestWithCommand = jestRunner as any
-    const vitestWithCommand = vitestRunner as any
+    const jestWithCommand = jestRunner as { command?: string }
+    const vitestWithCommand = vitestRunner as { command?: string }
     
     expect(jestWithCommand.command).toBeUndefined()
     expect(vitestWithCommand.command).toBeUndefined()
@@ -64,7 +64,7 @@ describe('RunnerFactory with config overrides', () => {
     expect(runner).toBeDefined()
     expect(runner.constructor.name).toBe('JestRunner')
     
-    const runnerWithCommand = runner as any
+    const runnerWithCommand = runner as { command?: string }
     expect(runnerWithCommand.command).toBeUndefined()
   })
 
@@ -81,7 +81,7 @@ describe('RunnerFactory with config overrides', () => {
     expect(vitestRunner).toBeDefined()
     expect(vitestRunner.constructor.name).toBe('VitestRunner')
     
-    const runnerWithCommand = vitestRunner as any
+    const runnerWithCommand = vitestRunner as { command?: string }
     expect(runnerWithCommand.command).toBeUndefined()
   })
 })
