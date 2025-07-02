@@ -80,11 +80,11 @@ jobs:
 
       - name: Verify build output
         run: |
-          if [ \! -d "dist" ]; then
+          if [ ! -d "dist" ]; then
             echo "❌ Build failed - dist directory not found"
             exit 1
           fi
-          if [ \! -f "dist/index.js" ]; then
+          if [ ! -f "dist/index.js" ]; then
             echo "❌ Build failed - main output file not found"
             exit 1
           fi
@@ -116,4 +116,3 @@ jobs:
 
       - name: Build project
         run: npm run build
-EOF < /dev/null
