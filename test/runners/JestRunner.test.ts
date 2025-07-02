@@ -18,26 +18,32 @@ describe('JestRunner', () => {
   });
 
   it('should execute "jest --coverage" command when runCoverage() is called', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     mockExeca.mockResolvedValue({
       exitCode: 0,
       stdout: 'Test results output',
       stderr: '',
-    } as any);
+    } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
     const runner = new JestRunner();
     await runner.runCoverage();
 
-    expect(mockExeca).toHaveBeenCalledWith('npx', ['jest', '--coverage', '--coverageDirectory', './coverage'], {
-      stdio: 'pipe',
-    });
+    expect(mockExeca).toHaveBeenCalledWith(
+      'npx',
+      ['jest', '--coverage', '--coverageDirectory', './coverage'],
+      {
+        stdio: 'pipe',
+      }
+    );
   });
 
   it('should return success result when jest command succeeds', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     mockExeca.mockResolvedValue({
       exitCode: 0,
       stdout: 'Test results output',
       stderr: '',
-    } as any);
+    } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
     const runner = new JestRunner();
     const result = await runner.runCoverage();
@@ -69,18 +75,23 @@ describe('JestRunner', () => {
     const originalEnv = process.env.COVERAGE_OUTPUT_DIR;
     process.env.COVERAGE_OUTPUT_DIR = '/tmp/custom-coverage';
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     mockExeca.mockResolvedValue({
       exitCode: 0,
       stdout: '',
       stderr: '',
-    } as any);
+    } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
     const runner = new JestRunner();
     await runner.runCoverage();
 
-    expect(mockExeca).toHaveBeenCalledWith('npx', ['jest', '--coverage', '--coverageDirectory', '/tmp/custom-coverage'], {
-      stdio: 'pipe',
-    });
+    expect(mockExeca).toHaveBeenCalledWith(
+      'npx',
+      ['jest', '--coverage', '--coverageDirectory', '/tmp/custom-coverage'],
+      {
+        stdio: 'pipe',
+      }
+    );
 
     // Restore original environment
     if (originalEnv !== undefined) {

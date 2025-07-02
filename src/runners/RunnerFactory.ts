@@ -18,7 +18,7 @@ export class RunnerFactory {
         // TODO: Implement AvaRunner
         throw new Error('Ava runner not yet implemented');
       default:
-        throw new Error(`Unknown runner type: ${runnerType}`);
+        throw new Error(`Unknown runner type: ${String(runnerType)}`);
     }
   }
 
