@@ -18,7 +18,6 @@ describe('VitestRunner', () => {
   });
 
   it('should execute "vitest run --coverage" command when runCoverage() is called', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     mockExeca.mockResolvedValue({
       exitCode: 0,
       stdout: 'Test results output',
@@ -44,7 +43,6 @@ describe('VitestRunner', () => {
   });
 
   it('should return success result when vitest command succeeds', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     mockExeca.mockResolvedValue({
       exitCode: 0,
       stdout: 'Test results output',
@@ -81,7 +79,6 @@ describe('VitestRunner', () => {
     const originalEnv = process.env.COVERAGE_OUTPUT_DIR;
     process.env.COVERAGE_OUTPUT_DIR = '/tmp/custom-coverage';
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     mockExeca.mockResolvedValue({
       exitCode: 0,
       stdout: '',

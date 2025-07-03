@@ -58,98 +58,122 @@ function createCLI(): Command {
     .description('Run coverage analysis for detected test runners')
     .option('-p, --path <path>', 'path to package.json file')
     .option('-r, --repo <url>', 'clone and analyze remote repository')
-    .option('-o, --output <dir>', 'output directory for coverage reports', 'coverage-merged')
-    .option('-b, --branch <branch>', 'git branch to checkout (only with --repo)')
+    .option(
+      '-o, --output <dir>',
+      'output directory for coverage reports',
+      'coverage-merged'
+    )
+    .option(
+      '-b, --branch <branch>',
+      'git branch to checkout (only with --repo)'
+    )
     .option('--no-install', 'skip dependency installation (only with --repo)')
-    .option('--no-cleanup', 'keep cloned repository after analysis (only with --repo)')
-    .option('--timeout <ms>', 'timeout for clone and install operations in milliseconds', '300000')
-    .action(async (options: { 
-      path?: string; 
-      repo?: string; 
-      output: string;
-      branch?: string;
-      install: boolean;
-      cleanup: boolean;
-      timeout: string;
-    }) => {
-      if (program.opts().debug) {
-        setDebugMode(true);
-      }
-
-      try {
-        // Handle remote repository analysis
-        if (options.repo) {
-          console.log(`🌐 Analyzing remote repository: ${options.repo}`);
-          
-          const result = await executeInClonedRepo(options.repo, {
-            outputDir: options.output,
-            branch: options.branch,
-            installDependencies: options.install,
-            cleanup: options.cleanup,
-            timeout: parseInt(options.timeout)
-          });
-
-          if (result.success) {
-            console.log('✅ Remote repository analysis completed successfully!');
-            console.log(`   📁 Output directory: ${result.outputDir}`);
-            if (result.runners && result.runners.length > 0) {
-              console.log(`   🏃 Runners used: ${result.runners.join(', ')}`);
-            }
-            if (result.coverageFiles && result.coverageFiles.length > 0) {
-              console.log(`   📊 Coverage files generated: ${result.coverageFiles.length}`);
-            }
-            if (!options.cleanup && result.clonedPath) {
-              console.log(`   📂 Cloned repository preserved at: ${result.clonedPath}`);
-            }
-          } else {
-            console.error('❌ Remote repository analysis failed');
-            console.error(`   Error: ${result.error}`);
-            process.exit(1);
-          }
-          return;
+    .option(
+      '--no-cleanup',
+      'keep cloned repository after analysis (only with --repo)'
+    )
+    .option(
+      '--timeout <ms>',
+      'timeout for clone and install operations in milliseconds',
+      '300000'
+    )
+    .action(
+      async (options: {
+        path?: string;
+        repo?: string;
+        output: string;
+        branch?: string;
+        install: boolean;
+        cleanup: boolean;
+        timeout: string;
+      }) => {
+        if (program.opts().debug) {
+          setDebugMode(true);
         }
 
-        // Handle local repository analysis (existing functionality)
-        const runners = detectRunners(options.path);
+        try {
+          // Handle remote repository analysis
+          if (options.repo) {
+            console.log(`🌐 Analyzing remote repository: ${options.repo}`);
 
-        if (runners.length === 0) {
-          console.log('No test runners detected. Skipping coverage analysis.');
-          return;
-        }
-
-        console.log(`Running coverage analysis for: ${runners.join(', ')}`);
-
-        for (const runnerType of runners) {
-          try {
-            console.log(`\n🏃 Running ${runnerType} coverage...`);
-            const runner = RunnerFactory.createRunner(runnerType);
-            const result = await runner.runCoverage();
+            const result = await executeInClonedRepo(options.repo, {
+              outputDir: options.output,
+              branch: options.branch,
+              installDependencies: options.install,
+              cleanup: options.cleanup,
+              timeout: parseInt(options.timeout),
+            });
 
             if (result.success) {
-              console.log(`✅ ${runnerType} coverage completed successfully`);
-              console.log(`   Output: ${result.outputPath}`);
-              if (result.duration) {
-                console.log(`   Duration: ${result.duration}ms`);
+              console.log(
+                '✅ Remote repository analysis completed successfully!'
+              );
+              console.log(`   📁 Output directory: ${result.outputDir}`);
+              if (result.runners && result.runners.length > 0) {
+                console.log(`   🏃 Runners used: ${result.runners.join(', ')}`);
+              }
+              if (result.coverageFiles && result.coverageFiles.length > 0) {
+                console.log(
+                  `   📊 Coverage files generated: ${result.coverageFiles.length}`
+                );
+              }
+              if (!options.cleanup && result.clonedPath) {
+                console.log(
+                  `   📂 Cloned repository preserved at: ${result.clonedPath}`
+                );
               }
             } else {
-              console.error(
-                `❌ ${runnerType} coverage failed (exit code: ${result.exitCode})`
-              );
-              if (result.stderr) {
-                console.error(`   Error: ${result.stderr}`);
-              }
+              console.error('❌ Remote repository analysis failed');
+              console.error(`   Error: ${result.error}`);
+              process.exit(1);
             }
-          } catch (error) {
-            console.error(`❌ Failed to run ${runnerType}:`, error);
+            return;
           }
-        }
 
-        console.log('\n🎉 Coverage analysis completed!');
-      } catch (error) {
-        logger.error('Failed to run coverage analysis:', error);
-        process.exit(1);
+          // Handle local repository analysis (existing functionality)
+          const runners = detectRunners(options.path);
+
+          if (runners.length === 0) {
+            console.log(
+              'No test runners detected. Skipping coverage analysis.'
+            );
+            return;
+          }
+
+          console.log(`Running coverage analysis for: ${runners.join(', ')}`);
+
+          for (const runnerType of runners) {
+            try {
+              console.log(`\n🏃 Running ${runnerType} coverage...`);
+              const runner = RunnerFactory.createRunner(runnerType);
+              const result = await runner.runCoverage();
+
+              if (result.success) {
+                console.log(`✅ ${runnerType} coverage completed successfully`);
+                console.log(`   Output: ${result.outputPath}`);
+                if (result.duration) {
+                  console.log(`   Duration: ${result.duration}ms`);
+                }
+              } else {
+                console.error(
+                  `❌ ${runnerType} coverage failed (exit code: ${result.exitCode})`
+                );
+                if (result.stderr) {
+                  console.error(`   Error: ${result.stderr}`);
+                }
+              }
+            } catch (error) {
+              console.error(`❌ Failed to run ${runnerType}:`, error);
+            }
+          }
+
+          console.log('\n🎉 Coverage analysis completed!');
+        } catch (error) {
+          logger.error('Failed to run coverage analysis:', error);
+          process.exit(1);
+        }
       }
-    });
+    );
 
   // Add merge command
   program
