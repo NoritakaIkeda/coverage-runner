@@ -88,6 +88,21 @@ Follow conventional commit format:
 - Ensure all tests pass before submitting
 - Aim for good test coverage
 
+### Test-Driven Development (TDD)
+
+We follow TDD practices (t-wada style) for implementing new features:
+
+1. **Red**: Write a failing test first
+2. **Green**: Write minimal code to make the test pass
+3. **Refactor**: Improve code while keeping tests passing
+4. **Repeat**: Continue the cycle for each new requirement
+
+```bash
+# TDD workflow commands
+npm run test -- --watch    # Run tests in watch mode
+npm run test -- specific.test.ts  # Run specific test file
+```
+
 ### Documentation
 
 - Update README.md for user-facing changes

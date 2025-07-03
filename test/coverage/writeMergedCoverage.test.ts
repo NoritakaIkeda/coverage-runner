@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
-/* eslint-disable @typescript-eslint/require-await */
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -148,7 +145,7 @@ describe('writeMergedCoverage', () => {
 
     // Verify JSON content is empty object
     const jsonContent = JSON.parse(fs.readFileSync(jsonFile, 'utf-8')) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+
     expect(Object.keys(jsonContent)).toHaveLength(0);
   });
 

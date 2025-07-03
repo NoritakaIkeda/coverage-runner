@@ -18,7 +18,6 @@ describe('JestRunner', () => {
   });
 
   it('should execute "jest --coverage" command when runCoverage() is called', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     mockExeca.mockResolvedValue({
       exitCode: 0,
       stdout: 'Test results output',
@@ -38,7 +37,6 @@ describe('JestRunner', () => {
   });
 
   it('should return success result when jest command succeeds', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     mockExeca.mockResolvedValue({
       exitCode: 0,
       stdout: 'Test results output',
@@ -75,7 +73,6 @@ describe('JestRunner', () => {
     const originalEnv = process.env.COVERAGE_OUTPUT_DIR;
     process.env.COVERAGE_OUTPUT_DIR = '/tmp/custom-coverage';
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     mockExeca.mockResolvedValue({
       exitCode: 0,
       stdout: '',

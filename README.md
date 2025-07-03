@@ -1,51 +1,323 @@
 # coverage-runner
 
-A unified CLI tool for running and managing code coverage analysis across different JavaScript/TypeScript projects and testing frameworks.
+A unified CLI tool for running and managing code coverage analysis across different JavaScript/TypeScript testing frameworks with intelligent merging and customizable configurations.
 
 ## Overview
 
-Coverage-runner solves the problem of fragmented coverage tooling by providing a single, consistent interface for code coverage analysis. Instead of remembering different commands and configurations for various testing frameworks (Jest, Vitest, Mocha, etc.), coverage-runner automatically detects your project setup and runs the appropriate coverage tools with optimal settings.
+Coverage-runner solves the problem of fragmented coverage tooling by providing a single, consistent interface for code coverage analysis. It automatically detects Jest, Vitest, and other testing frameworks in your project, runs them with coverage collection, and intelligently merges the results into unified coverage reports.
 
-## Usage
+## Features
 
-### Quick Start
+- **🔍 Smart Detection**: Automatically detects Jest, Vitest, and other testing frameworks
+- **🔀 Coverage Merging**: Intelligently merges coverage from multiple test runners
+- **⚙️ Flexible Configuration**: Customizable via `.coverage-config.json` with runner overrides, exclude patterns, and merge strategies
+- **📊 Multiple Output Formats**: Generates JSON, LCOV, HTML, and Cobertura reports
+- **🚀 CI/CD Ready**: Seamless integration with GitHub Actions, CircleCI, and other CI platforms
+- **📁 Remote Repository Support**: Analyze external repositories with `--repo` option
+
+## Quick Start
+
+### 1. Local Project Analysis
 
 Run coverage analysis on any JavaScript/TypeScript project:
 
 ```bash
+# Analyze current directory
 npx coverage-runner
+
+# Merge coverage from detected test runners
+npx coverage-runner merge
+
+# Analyze specific patterns
+npx coverage-runner merge --patterns "./coverage/**/*.json"
 ```
 
-### Installation
+**Purpose**: Automatically detects testing frameworks and generates unified coverage reports.
 
-For regular use, install globally:
+### 2. Custom Configuration
+
+Create a `.coverage-config.json` file to customize behavior:
+
+```json
+{
+  "runnerOverrides": {
+    "jest": "jest --config=jest.config.ci.js --coverage",
+    "vitest": "vitest run --coverage --config=vitest.config.ts"
+  },
+  "excludePatterns": [
+    "**/*.spec.ts",
+    "**/*.test.ts", 
+    "**/__tests__/**",
+    "**/node_modules/**"
+  ],
+  "mergeStrategy": "merge"
+}
+```
+
+Then run with configuration:
+
+```bash
+# Uses .coverage-config.json automatically
+npx coverage-runner
+
+# Use explicit configuration file
+npx coverage-runner --config ./custom-config.json
+```
+
+**Purpose**: Customizes test runner commands, excludes unwanted files, and controls merge behavior.
+
+### 3. Remote Repository Analysis
+
+Analyze external repositories directly:
+
+```bash
+# Clone and analyze a GitHub repository
+npx coverage-runner --repo https://github.com/username/project.git
+
+# Analyze with custom configuration
+npx coverage-runner --repo https://github.com/username/project.git --config ./config.json
+```
+
+**Purpose**: Enables coverage analysis of external projects without manual cloning and setup.
+
+## Output Files
+
+Coverage-runner generates multiple output formats:
+
+| File | Description | Use Case |
+|------|-------------|----------|
+| `coverage-merged.json` | Unified Istanbul coverage data | Primary coverage report, CI analysis |
+| `coverage-final.json` | Final processed coverage | Legacy tool compatibility |
+| `lcov.info` | LCOV format report | Code coverage visualization, VS Code extensions |
+| `coverage/index.html` | Interactive HTML report | Local development, detailed analysis |
+| `cobertura.xml` | Cobertura XML format | Jenkins, GitLab CI integration |
+
+### Merge Strategies
+
+- **`"merge"`** (default): Combines all runner results into single `coverage-merged.json`
+- **`"separate"`**: Creates individual `coverage-{runner}.json` files per test runner
+
+## Installation
+
+### Global Installation
 
 ```bash
 npm install -g coverage-runner
 coverage-runner
 ```
 
-## Features
+### Local Development
 
-- **Automatic Detection**: Intelligently detects your testing framework and project configuration
-- **Unified Interface**: Single command works across Jest, Vitest, Mocha, and other popular testing tools
-- **Configuration Support**: Respects existing coverage configuration files
-- **Integration Ready**: Designed to work seamlessly in CI/CD pipelines
-- **Cross-Platform**: Works on Windows, macOS, and Linux
+```bash
+npm install --save-dev coverage-runner
+npx coverage-runner
+```
 
-## Status
+## CI/CD Integration
 
-🚧 **Currently in Development** - This tool is under active development. Core functionality is being implemented and tested.
+### GitHub Actions + Codecov
 
-## Roadmap
+Create `.github/workflows/coverage.yml`:
 
-- [x] CLI foundation and project structure
-- [ ] Framework auto-detection
-- [ ] Coverage execution engine
-- [ ] Configuration file support
-- [ ] CI/CD integration helpers
+```yaml
+name: Coverage Analysis
 
-## Development
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run coverage analysis
+      run: npx coverage-runner
+      
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage-merged.json
+        flags: unittests
+        name: coverage-report
+        fail_ci_if_error: true
+        
+    - name: Upload LCOV to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./lcov.info
+        flags: lcov
+```
+
+**Purpose**: Automates coverage collection in CI and uploads results to Codecov for visualization.
+
+### Advanced CI Configuration
+
+For projects with multiple test runners:
+
+```yaml
+- name: Run coverage with custom config
+  run: |
+    npx coverage-runner --config ./.github/coverage-ci.json
+    
+- name: Verify coverage thresholds
+  run: |
+    npx coverage-runner merge --patterns "./coverage/**/*.json" --threshold 80
+```
+
+### Example Project Setup
+
+Typical project structure using coverage-runner:
+
+```
+my-project/
+├── src/
+│   ├── components/
+│   └── utils/
+├── tests/
+│   ├── jest/           # Jest-specific tests
+│   └── vitest/         # Vitest-specific tests
+├── .coverage-config.json
+├── jest.config.js
+├── vitest.config.ts
+└── .github/
+    └── workflows/
+        └── coverage.yml
+```
+
+Configuration for dual-runner setup:
+
+```json
+{
+  "runnerOverrides": {
+    "jest": "jest --testPathPattern=tests/jest --coverage",
+    "vitest": "vitest run tests/vitest --coverage"
+  },
+  "excludePatterns": [
+    "**/node_modules/**",
+    "**/*.config.{js,ts}",
+    "**/dist/**",
+    "**/__mocks__/**"
+  ],
+  "mergeStrategy": "merge"
+}
+```
+
+## Configuration Reference
+
+### Complete `.coverage-config.json` Options
+
+```json
+{
+  "runnerOverrides": {
+    "jest": "string - Custom Jest command",
+    "vitest": "string - Custom Vitest command", 
+    "mocha": "string - Custom Mocha command"
+  },
+  "excludePatterns": [
+    "string[] - Glob patterns to exclude from coverage"
+  ],
+  "mergeStrategy": "merge | separate - How to combine runner results"
+}
+```
+
+### Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `COVERAGE_OUTPUT_DIR` | Output directory for coverage files | `./coverage` |
+| `COVERAGE_DEBUG` | Enable debug logging | `false` |
+| `COVERAGE_THRESHOLD` | Minimum coverage percentage | `undefined` |
+
+## Advanced Usage
+
+### Programmatic API
+
+```javascript
+import { CoverageRunner } from 'coverage-runner';
+
+const runner = new CoverageRunner({
+  excludePatterns: ['**/*.spec.ts'],
+  mergeStrategy: 'merge'
+});
+
+const result = await runner.run();
+console.log(`Coverage: ${result.totalCoverage}%`);
+```
+
+### Custom Runners
+
+```bash
+# Run specific test runner only
+npx coverage-runner --runner jest
+
+# Multiple specific runners
+npx coverage-runner --runner jest,vitest
+
+# Skip auto-detection
+npx coverage-runner --no-detect --runner jest
+```
+
+## Troubleshooting
+
+### Common Issues
+
+**No test runners detected**
+```bash
+# Verify test runners are installed
+npm list jest vitest
+
+# Force specific runner
+npx coverage-runner --runner jest
+```
+
+**Permission denied errors**
+```bash
+# Make sure coverage-runner is executable
+chmod +x node_modules/.bin/coverage-runner
+
+# Or use npx
+npx coverage-runner
+```
+
+**Coverage files not found**
+```bash
+# Verify coverage output directories
+ls -la ./coverage/
+
+# Check custom output directory
+export COVERAGE_OUTPUT_DIR=./custom-coverage
+npx coverage-runner
+```
+
+### Debug Mode
+
+Enable detailed logging:
+
+```bash
+export COVERAGE_DEBUG=true
+npx coverage-runner
+```
+
+## Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+
+### Development Setup
 
 ### Prerequisites
 

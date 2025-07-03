@@ -1,0 +1,44 @@
+# Global codeowners
+* @NoritakaIkeda
+
+# Core source code
+/src/ @NoritakaIkeda
+
+# CLI and binary
+/bin/ @NoritakaIkeda
+
+# Test runners and coverage logic
+/src/runners/ @NoritakaIkeda
+/src/coverage/ @NoritakaIkeda
+
+# Configuration system
+/src/config/ @NoritakaIkeda
+
+# Tests
+/test/ @NoritakaIkeda
+
+# Documentation
+README.md @NoritakaIkeda
+CONTRIBUTING.md @NoritakaIkeda
+/docs/ @NoritakaIkeda
+
+# Package and dependency management
+package.json @NoritakaIkeda
+package-lock.json @NoritakaIkeda
+.npmignore @NoritakaIkeda
+
+# CI/CD and workflows
+/.github/ @NoritakaIkeda
+
+# Examples and demos
+/examples/ @NoritakaIkeda
+
+# Build and tooling configuration
+tsconfig*.json @NoritakaIkeda
+eslint.config.js @NoritakaIkeda
+vitest.config.mjs @NoritakaIkeda
+.husky/ @NoritakaIkeda
+
+# Security and legal
+SECURITY.md @NoritakaIkeda
+LICENSE @NoritakaIkeda
