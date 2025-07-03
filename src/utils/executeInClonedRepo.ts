@@ -2,10 +2,10 @@ import { promises as fs } from 'fs';
 import { resolve } from 'path';
 import { execSync } from 'child_process';
 import { tmpdir } from 'os';
-import { detectRunners } from './detectRunners';
-import { RunnerFactory } from '../runners/RunnerFactory';
-import { mergeCoverageFiles } from '../commands/mergeCoverage';
-import { loadConfig } from '../config/load';
+import { detectRunners } from './detectRunners.js';
+import { RunnerFactory } from '../runners/RunnerFactory.js';
+import { mergeCoverageFiles } from '../commands/mergeCoverage.js';
+import { loadConfig } from '../config/load.js';
 
 export interface CloneOptions {
   outputDir: string;
