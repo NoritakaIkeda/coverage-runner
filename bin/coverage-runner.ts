@@ -39,7 +39,7 @@ function createCLI(): Command {
     .description('Detect test runners in the current project')
     .option('-p, --path <path>', 'path to package.json file')
     .action((options: { path?: string }) => {
-      if (program.opts().debug) {
+      if (program.opts().debug === true) {
         setDebugMode(true);
       }
 
@@ -87,13 +87,13 @@ function createCLI(): Command {
         cleanup: boolean;
         timeout: string;
       }) => {
-        if (program.opts().debug) {
+        if (program.opts().debug === true) {
           setDebugMode(true);
         }
 
         try {
           // Handle remote repository analysis
-          if (options.repo) {
+          if (options.repo !== undefined && options.repo !== '') {
             console.log(`🌐 Analyzing remote repository: ${options.repo}`);
 
             const result = await executeInClonedRepo(options.repo, {
@@ -117,7 +117,7 @@ function createCLI(): Command {
                   `   📊 Coverage files generated: ${result.coverageFiles.length}`
                 );
               }
-              if (!options.cleanup && result.clonedPath) {
+              if (!options.cleanup && result.clonedPath !== undefined && result.clonedPath !== '') {
                 console.log(
                   `   📂 Cloned repository preserved at: ${result.clonedPath}`
                 );
@@ -151,14 +151,14 @@ function createCLI(): Command {
               if (result.success) {
                 console.log(`✅ ${runnerType} coverage completed successfully`);
                 console.log(`   Output: ${result.outputPath}`);
-                if (result.duration) {
+                if (result.duration !== undefined && result.duration !== null && !isNaN(result.duration)) {
                   console.log(`   Duration: ${result.duration}ms`);
                 }
               } else {
                 console.error(
                   `❌ ${runnerType} coverage failed (exit code: ${result.exitCode})`
                 );
-                if (result.stderr) {
+                if (result.stderr !== undefined && result.stderr !== null && result.stderr !== '') {
                   console.error(`   Error: ${result.stderr}`);
                 }
               }
@@ -202,7 +202,7 @@ function createCLI(): Command {
         normalizePaths?: boolean;
         rootDir?: string;
       }) => {
-        if (program.opts().debug) {
+        if (program.opts().debug === true) {
           setDebugMode(true);
         }
 
@@ -217,14 +217,14 @@ function createCLI(): Command {
           console.log('🔄 Merging coverage files...');
           logger.debug(`Input patterns: ${options.input.join(', ')}`);
           logger.debug(`Output directory: ${options.output}`);
-          logger.debug(`JSON only: ${options.jsonOnly || false}`);
-          logger.debug(`Normalize paths: ${options.normalizePaths || false}`);
+          logger.debug(`JSON only: ${options.jsonOnly ?? false}`);
+          logger.debug(`Normalize paths: ${options.normalizePaths ?? false}`);
 
           const result = await mergeCoverageFiles({
             inputPatterns: options.input,
             outputDir: options.output,
-            jsonOnly: options.jsonOnly || false,
-            normalizePaths: options.normalizePaths || false,
+            jsonOnly: options.jsonOnly ?? false,
+            normalizePaths: options.normalizePaths ?? false,
             rootDir: options.rootDir,
           });
 
@@ -233,12 +233,12 @@ function createCLI(): Command {
             console.log(`   📁 Output directory: ${result.outputDir}`);
             console.log(`   📊 Files processed: ${result.filesProcessed}`);
             console.log(`   📝 Unique files in output: ${result.uniqueFiles}`);
-            if (result.normalizedPaths) {
+            if (result.normalizedPaths !== undefined && result.normalizedPaths !== null && !isNaN(result.normalizedPaths)) {
               console.log(`   🔄 Paths normalized: ${result.normalizedPaths}`);
             }
           } else {
             console.error('❌ Coverage merging failed');
-            if (result.error) {
+            if (result.error !== undefined && result.error !== null && result.error !== '') {
               console.error(`   Error: ${result.error}`);
             }
             process.exit(1);

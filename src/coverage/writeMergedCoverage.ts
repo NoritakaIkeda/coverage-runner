@@ -88,7 +88,7 @@ export function writeMergedCoverage(
 
         // Add line data
         for (const [statementId, hits] of Object.entries(
-          fileCoverage.s || {}
+          fileCoverage.s ?? {}
         )) {
           const statement = fileCoverage.statementMap?.[statementId];
           if (statement) {

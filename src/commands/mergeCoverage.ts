@@ -98,7 +98,7 @@ export async function mergeCoverageFiles(
           continue;
         }
 
-        if (coverageMap && Object.keys(coverageMap.toJSON()).length > 0) {
+        if (coverageMap !== null && coverageMap !== undefined && Object.keys(coverageMap.toJSON()).length > 0) {
           coverageData.push(coverageMap.toJSON());
           filesProcessed++;
           logger.debug(`Successfully loaded coverage from: ${filePath}`);

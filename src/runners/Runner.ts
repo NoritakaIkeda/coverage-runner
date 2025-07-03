@@ -15,7 +15,7 @@ export abstract class BaseRunner implements Runner {
   protected outputDir: string;
 
   constructor(outputDir = './coverage') {
-    this.outputDir = process.env.COVERAGE_OUTPUT_DIR || outputDir;
+    this.outputDir = process.env.COVERAGE_OUTPUT_DIR ?? outputDir;
   }
 
   abstract runCoverage(): Promise<CoverageResult>;
