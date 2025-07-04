@@ -1,6 +1,16 @@
 # coverage-runner
 
+[![npm version](https://badge.fury.io/js/coverage-runner.svg)](https://www.npmjs.com/package/coverage-runner)
+[![npm downloads](https://img.shields.io/npm/dm/coverage-runner.svg)](https://www.npmjs.com/package/coverage-runner)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A unified CLI tool for running and managing code coverage analysis across different JavaScript/TypeScript testing frameworks with intelligent merging and customizable configurations.
+
+## 📦 Package Information
+
+- **npm**: [coverage-runner](https://www.npmjs.com/package/coverage-runner)
+- **Current Version**: 0.1.0-beta.1 (Beta Release)
+- **Install**: `npm install coverage-runner@beta`
 
 ## Overview
 
@@ -11,7 +21,9 @@ Coverage-runner solves the problem of fragmented coverage tooling by providing a
 - **🔍 Smart Detection**: Automatically detects Jest, Vitest, and other testing frameworks
 - **🔀 Coverage Merging**: Intelligently merges coverage from multiple test runners
 - **⚙️ Flexible Configuration**: Customizable via `.coverage-config.json` with runner overrides, exclude patterns, and merge strategies
-- **📊 Multiple Output Formats**: Generates JSON, LCOV, HTML, and Cobertura reports
+- **📊 Multiple Output Formats**: Generates JSON, LCOV, HTML, Cobertura, and **Text** reports
+- **✨ Flexible Format Selection**: Choose output formats with `--format json,lcov,text`
+- **📝 Human-Readable Text Reports**: Comprehensive text summaries and detailed coverage reports
 - **🚀 CI/CD Ready**: Seamless integration with GitHub Actions, CircleCI, and other CI platforms
 - **📁 Remote Repository Support**: Analyze external repositories with `--repo` option
 
@@ -23,13 +35,22 @@ Run coverage analysis on any JavaScript/TypeScript project:
 
 ```bash
 # Analyze current directory
-npx coverage-runner
+npx coverage-runner@beta
 
 # Merge coverage from detected test runners
-npx coverage-runner merge
+npx coverage-runner@beta merge
+
+# Generate text format reports
+npx coverage-runner@beta merge --format text
+
+# Generate multiple formats
+npx coverage-runner@beta merge --format json,lcov,text
+
+# Detailed text reports
+npx coverage-runner@beta merge --format text --text-details
 
 # Analyze specific patterns
-npx coverage-runner merge --patterns "./coverage/**/*.json"
+npx coverage-runner@beta merge --patterns "./coverage/**/*.json"
 ```
 
 **Purpose**: Automatically detects testing frameworks and generates unified coverage reports.
@@ -91,6 +112,8 @@ Coverage-runner generates multiple output formats:
 | `lcov.info` | LCOV format report | Code coverage visualization, VS Code extensions |
 | `coverage/index.html` | Interactive HTML report | Local development, detailed analysis |
 | `cobertura.xml` | Cobertura XML format | Jenkins, GitLab CI integration |
+| `coverage-summary.txt` | **NEW:** Text summary report | Quick overview, terminal output |
+| `coverage-detailed.txt` | **NEW:** Detailed text report | Function-level analysis, debugging |
 
 ### Merge Strategies
 
