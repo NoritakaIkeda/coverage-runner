@@ -188,7 +188,13 @@ function createCLI(): Command {
       'output directory for merged coverage',
       'coverage-merged'
     )
-    .option('--json-only', 'output only JSON format (skip LCOV)')
+    .option('--json-only', 'output only JSON format (skip LCOV) [deprecated: use --format]')
+    .option(
+      '--format <formats...>',
+      'output formats: json, lcov, text (can specify multiple)',
+      ['json', 'lcov']
+    )
+    .option('--text-details', 'include detailed coverage report when using text format')
     .option(
       '--normalize-paths',
       'normalize file paths to handle different formats'
@@ -199,6 +205,8 @@ function createCLI(): Command {
         input?: string[];
         output: string;
         jsonOnly?: boolean;
+        format?: string[];
+        textDetails?: boolean;
         normalizePaths?: boolean;
         rootDir?: string;
       }) => {
@@ -218,12 +226,16 @@ function createCLI(): Command {
           logger.debug(`Input patterns: ${options.input.join(', ')}`);
           logger.debug(`Output directory: ${options.output}`);
           logger.debug(`JSON only: ${options.jsonOnly ?? false}`);
+          logger.debug(`Format: ${options.format?.join(', ') ?? 'default'}`);
+          logger.debug(`Text details: ${options.textDetails ?? false}`);
           logger.debug(`Normalize paths: ${options.normalizePaths ?? false}`);
 
           const result = await mergeCoverageFiles({
             inputPatterns: options.input,
             outputDir: options.output,
             jsonOnly: options.jsonOnly ?? false,
+            ...(options.format && { format: options.format as ('json' | 'lcov' | 'text')[] }),
+            textDetails: options.textDetails ?? false,
             normalizePaths: options.normalizePaths ?? false,
             rootDir: options.rootDir,
           });

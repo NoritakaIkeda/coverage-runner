@@ -1,0 +1,26 @@
+COVERAGE SUMMARY
+================
+
+calculator.ts:
+  Statements: 70/70 (100%)
+  Functions:  16/16 (100%)
+  Lines:      42/42 (100%)
+  Branches:   36/36 (100%)
+
+stringUtils.ts:
+  Statements: 58/58 (100%)
+  Functions:  18/18 (100%)
+  Lines:      38/38 (100%)
+  Branches:   24/25 (96%)
+
+index.ts:
+  Statements: 0/22 (0%)
+  Functions:  1/1 (100%)
+  Lines:      0/22 (0%)
+  Branches:   1/1 (100%)
+
+TOTAL:
+  Statements: 128/150 (85%)
+  Functions:  35/35 (100%)
+  Lines:      80/102 (78%)
+  Branches:   61/62 (98%)

@@ -7,11 +7,16 @@ import { loadIstanbulJson } from '../coverage/loaders/loadIstanbulJson.js';
 import { mergeCoverage, CoverageData } from '../coverage/mergeCoverage.js';
 import { normalizeCoveragePaths } from '../coverage/normalizeCoveragePaths.js';
 import { writeMergedCoverage } from '../coverage/writeMergedCoverage.js';
+import { writeTextCoverage } from '../coverage/writeTextCoverage.js';
+
+export type CoverageFormat = 'json' | 'lcov' | 'text';
 
 export interface MergeCoverageOptions {
   inputPatterns: string[];
   outputDir: string;
-  jsonOnly?: boolean;
+  jsonOnly?: boolean; // Legacy option for backward compatibility
+  format?: CoverageFormat[];
+  textDetails?: boolean;
   normalizePaths?: boolean;
   rootDir?: string | undefined;
 }
@@ -32,9 +37,24 @@ export async function mergeCoverageFiles(
     inputPatterns,
     outputDir,
     jsonOnly = false,
+    format,
+    textDetails = false,
     normalizePaths = false,
     rootDir,
   } = options;
+
+  // Determine output formats
+  let outputFormats: CoverageFormat[];
+  
+  if (format !== undefined && format.length > 0) {
+    outputFormats = format;
+  } else if (jsonOnly) {
+    // Legacy support
+    outputFormats = ['json'];
+  } else {
+    // Default formats
+    outputFormats = ['json', 'lcov'];
+  }
 
   logger.debug('Starting coverage merge operation');
   logger.debug(`Input patterns: ${inputPatterns.join(', ')}`);
@@ -141,12 +161,28 @@ export async function mergeCoverageFiles(
       );
     }
 
-    // Write merged coverage
+    // Write merged coverage in requested formats
     logger.debug('Writing merged coverage...');
-    writeMergedCoverage(mergedCoverage, {
-      outDir: outputDir,
-      jsonOnly,
-    });
+    logger.debug(`Output formats: ${outputFormats.join(', ')}`);
+    
+    const shouldWriteJson = outputFormats.includes('json');
+    const shouldWriteLcov = outputFormats.includes('lcov');
+    const shouldWriteText = outputFormats.includes('text');
+    
+    if (shouldWriteJson || shouldWriteLcov) {
+      writeMergedCoverage(mergedCoverage, {
+        outDir: outputDir,
+        jsonOnly: shouldWriteJson && !shouldWriteLcov,
+        lcovOnly: shouldWriteLcov && !shouldWriteJson,
+      });
+    }
+    
+    if (shouldWriteText) {
+      await writeTextCoverage(mergedCoverage, outputDir, {
+        summary: true,
+        detailed: textDetails,
+      });
+    }
 
     const uniqueFileCount = Object.keys(mergedCoverage.toJSON()).length;
 

@@ -1,0 +1,63 @@
+DETAILED COVERAGE REPORT
+========================
+
+File: calculator.ts
+Path: /Users/noritakaikeda/Documents/GitHub/coverage-runner/examples/dual-runner-project/src/calculator.ts
+==================================================
+
+Functions:
+  (anonymous_0): Covered (6 calls)
+  (anonymous_1): Covered (6 calls)
+  (anonymous_2): Covered (6 calls)
+  (anonymous_3): Covered (8 calls)
+  (anonymous_4): Covered (8 calls)
+  (anonymous_5): Covered (14 calls)
+  (anonymous_6): Covered (24 calls)
+  (anonymous_7): Covered (30 calls)
+  add: Covered (3 calls)
+  subtract: Covered (3 calls)
+  multiply: Covered (3 calls)
+  divide: Covered (4 calls)
+  percentage: Covered (4 calls)
+  isEven: Covered (7 calls)
+  isPrime: Covered (12 calls)
+  factorial: Covered (15 calls)
+
+Statements: 70/70 covered
+
+File: stringUtils.ts
+Path: /Users/noritakaikeda/Documents/GitHub/coverage-runner/examples/dual-runner-project/src/stringUtils.ts
+==================================================
+
+Functions:
+  (anonymous_0): Covered (12 calls)
+  (anonymous_1): Covered (10 calls)
+  (anonymous_2): Covered (18 calls)
+  (anonymous_3): Covered (14 calls)
+  (anonymous_4): Covered (12 calls)
+  (anonymous_5): Covered (12 calls)
+  (anonymous_6): Covered (12 calls)
+  (anonymous_7): Covered (9 calls)
+  (anonymous_8): Covered (7 calls)
+  (anonymous_9): Covered (6 calls)
+  capitalize: Covered (6 calls)
+  reverse: Covered (5 calls)
+  isPalindrome: Covered (9 calls)
+  wordCount: Covered (7 calls)
+  truncate: Covered (6 calls)
+  toKebabCase: Covered (6 calls)
+  toCamelCase: Covered (6 calls)
+  extractEmails: Covered (3 calls)
+
+Statements: 58/58 covered
+
+File: index.ts
+Path: /Users/noritakaikeda/Documents/GitHub/coverage-runner/examples/dual-runner-project/src/index.ts
+==================================================
+
+Functions:
+  (empty-report): Covered (1 calls)
+
+Statements: 0/22 covered
+Uncovered statements: 4, 5, 10, 11, 12, 14, 15, 16, 18, 19, 24, 25, 26, 27, 32, 33, 34, 35, 38, 39, 40, 41
+
