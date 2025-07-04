@@ -45,7 +45,7 @@ export async function mergeCoverageFiles(
 
   // Determine output formats
   let outputFormats: CoverageFormat[];
-  
+
   if (format !== undefined && format.length > 0) {
     outputFormats = format;
   } else if (jsonOnly) {
@@ -118,7 +118,11 @@ export async function mergeCoverageFiles(
           continue;
         }
 
-        if (coverageMap !== null && coverageMap !== undefined && Object.keys(coverageMap.toJSON()).length > 0) {
+        if (
+          coverageMap !== null &&
+          coverageMap !== undefined &&
+          Object.keys(coverageMap.toJSON()).length > 0
+        ) {
           coverageData.push(coverageMap.toJSON());
           filesProcessed++;
           logger.debug(`Successfully loaded coverage from: ${filePath}`);
@@ -164,11 +168,11 @@ export async function mergeCoverageFiles(
     // Write merged coverage in requested formats
     logger.debug('Writing merged coverage...');
     logger.debug(`Output formats: ${outputFormats.join(', ')}`);
-    
+
     const shouldWriteJson = outputFormats.includes('json');
     const shouldWriteLcov = outputFormats.includes('lcov');
     const shouldWriteText = outputFormats.includes('text');
-    
+
     if (shouldWriteJson || shouldWriteLcov) {
       writeMergedCoverage(mergedCoverage, {
         outDir: outputDir,
@@ -176,7 +180,7 @@ export async function mergeCoverageFiles(
         lcovOnly: shouldWriteLcov && !shouldWriteJson,
       });
     }
-    
+
     if (shouldWriteText) {
       await writeTextCoverage(mergedCoverage, outputDir, {
         summary: true,

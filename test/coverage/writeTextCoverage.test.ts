@@ -28,17 +28,29 @@ describe('writeTextCoverage', () => {
     const coverageData = {
       '/path/to/file1.ts': {
         path: '/path/to/file1.ts',
-        statementMap: { '0': { start: { line: 1, column: 0 }, end: { line: 1, column: 10 } } },
-        fnMap: { '0': { name: 'testFn', decl: { start: { line: 1, column: 0 }, end: { line: 1, column: 5 } }, loc: { start: { line: 1, column: 0 }, end: { line: 1, column: 5 } }, line: 1 } },
+        statementMap: {
+          '0': { start: { line: 1, column: 0 }, end: { line: 1, column: 10 } },
+        },
+        fnMap: {
+          '0': {
+            name: 'testFn',
+            decl: {
+              start: { line: 1, column: 0 },
+              end: { line: 1, column: 5 },
+            },
+            loc: { start: { line: 1, column: 0 }, end: { line: 1, column: 5 } },
+            line: 1,
+          },
+        },
         branchMap: {},
         s: { '0': 5 },
         f: { '0': 3 },
-        b: {}
-      }
+        b: {},
+      },
     };
 
     const coverageMap = createCoverageMap(coverageData);
-    
+
     await writeTextCoverage(coverageMap, testOutputDir);
 
     const textFile = resolve(testOutputDir, 'coverage-summary.txt');
@@ -55,20 +67,30 @@ describe('writeTextCoverage', () => {
     const coverageData = {
       '/path/to/file1.ts': {
         path: '/path/to/file1.ts',
-        statementMap: { 
+        statementMap: {
           '0': { start: { line: 1, column: 0 }, end: { line: 1, column: 10 } },
-          '1': { start: { line: 2, column: 0 }, end: { line: 2, column: 15 } }
+          '1': { start: { line: 2, column: 0 }, end: { line: 2, column: 15 } },
         },
-        fnMap: { '0': { name: 'testFunction', decl: { start: { line: 1, column: 0 }, end: { line: 1, column: 5 } }, loc: { start: { line: 1, column: 0 }, end: { line: 1, column: 5 } }, line: 1 } },
+        fnMap: {
+          '0': {
+            name: 'testFunction',
+            decl: {
+              start: { line: 1, column: 0 },
+              end: { line: 1, column: 5 },
+            },
+            loc: { start: { line: 1, column: 0 }, end: { line: 1, column: 5 } },
+            line: 1,
+          },
+        },
         branchMap: {},
         s: { '0': 5, '1': 0 },
         f: { '0': 3 },
-        b: {}
-      }
+        b: {},
+      },
     };
 
     const coverageMap = createCoverageMap(coverageData);
-    
+
     await writeTextCoverage(coverageMap, testOutputDir, { detailed: true });
 
     const textFile = resolve(testOutputDir, 'coverage-detailed.txt');
@@ -84,32 +106,44 @@ describe('writeTextCoverage', () => {
     const coverageData = {
       '/path/to/file1.ts': {
         path: '/path/to/file1.ts',
-        statementMap: { '0': { start: { line: 1, column: 0 }, end: { line: 1, column: 10 } } },
+        statementMap: {
+          '0': { start: { line: 1, column: 0 }, end: { line: 1, column: 10 } },
+        },
         fnMap: {},
         branchMap: {},
         s: { '0': 1 },
         f: {},
-        b: {}
-      }
+        b: {},
+      },
     };
 
     const coverageMap = createCoverageMap(coverageData);
-    
-    await writeTextCoverage(coverageMap, testOutputDir, { 
-      summary: true, 
-      detailed: true 
+
+    await writeTextCoverage(coverageMap, testOutputDir, {
+      summary: true,
+      detailed: true,
     });
 
     const summaryFile = resolve(testOutputDir, 'coverage-summary.txt');
     const detailedFile = resolve(testOutputDir, 'coverage-detailed.txt');
 
-    expect(await fs.access(summaryFile).then(() => true).catch(() => false)).toBe(true);
-    expect(await fs.access(detailedFile).then(() => true).catch(() => false)).toBe(true);
+    expect(
+      await fs
+        .access(summaryFile)
+        .then(() => true)
+        .catch(() => false)
+    ).toBe(true);
+    expect(
+      await fs
+        .access(detailedFile)
+        .then(() => true)
+        .catch(() => false)
+    ).toBe(true);
   });
 
   test('should handle empty coverage data gracefully', async () => {
     const coverageMap = createCoverageMap({});
-    
+
     await writeTextCoverage(coverageMap, testOutputDir);
 
     const textFile = resolve(testOutputDir, 'coverage-summary.txt');

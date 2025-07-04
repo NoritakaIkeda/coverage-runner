@@ -32,9 +32,12 @@ export async function writeTextCoverage(
 /**
  * Write a summary text report
  */
-async function writeSummaryReport(coverageMap: CoverageMap, outputDir: string): Promise<void> {
+async function writeSummaryReport(
+  coverageMap: CoverageMap,
+  outputDir: string
+): Promise<void> {
   const files = coverageMap.files();
-  
+
   if (files.length === 0) {
     const content = `COVERAGE SUMMARY
 ================
@@ -63,7 +66,7 @@ No coverage data found.
   for (const filePath of files) {
     const fileCoverage = coverageMap.fileCoverageFor(filePath);
     const summary = fileCoverage.toSummary();
-    
+
     const fileName = filePath.split('/').pop() ?? filePath;
     const statements = summary.statements;
     const functions = summary.functions;
@@ -89,10 +92,18 @@ No coverage data found.
   }
 
   // Add overall summary
-  const stmtPct = totalStatements > 0 ? Math.round((coveredStatements / totalStatements) * 100) : 0;
-  const funcPct = totalFunctions > 0 ? Math.round((coveredFunctions / totalFunctions) * 100) : 0;
-  const linePct = totalLines > 0 ? Math.round((coveredLines / totalLines) * 100) : 0;
-  const branchPct = totalBranches > 0 ? Math.round((coveredBranches / totalBranches) * 100) : 0;
+  const stmtPct =
+    totalStatements > 0
+      ? Math.round((coveredStatements / totalStatements) * 100)
+      : 0;
+  const funcPct =
+    totalFunctions > 0
+      ? Math.round((coveredFunctions / totalFunctions) * 100)
+      : 0;
+  const linePct =
+    totalLines > 0 ? Math.round((coveredLines / totalLines) * 100) : 0;
+  const branchPct =
+    totalBranches > 0 ? Math.round((coveredBranches / totalBranches) * 100) : 0;
 
   content += `TOTAL:
   Statements: ${coveredStatements}/${totalStatements} (${stmtPct}%)
@@ -107,9 +118,12 @@ No coverage data found.
 /**
  * Write a detailed text report
  */
-async function writeDetailedReport(coverageMap: CoverageMap, outputDir: string): Promise<void> {
+async function writeDetailedReport(
+  coverageMap: CoverageMap,
+  outputDir: string
+): Promise<void> {
   const files = coverageMap.files();
-  
+
   let content = `DETAILED COVERAGE REPORT
 ========================
 
@@ -134,7 +148,7 @@ ${'='.repeat(50)}
     // Function coverage details
     const functions = fileCoverage.f;
     const fnMap = fileCoverage.fnMap;
-    
+
     if (Object.keys(functions).length > 0) {
       content += 'Functions:\n';
       for (const fnId of Object.keys(functions)) {
@@ -149,16 +163,18 @@ ${'='.repeat(50)}
 
     // Statement coverage summary
     const statements = fileCoverage.s;
-    const coveredStmts = Object.values(statements).filter(count => count > 0).length;
+    const coveredStmts = Object.values(statements).filter(
+      count => count > 0
+    ).length;
     const totalStmts = Object.keys(statements).length;
-    
+
     content += `Statements: ${coveredStmts}/${totalStmts} covered\n`;
-    
+
     // Show uncovered statements
     const uncoveredStmts = Object.entries(statements)
       .filter(([, count]) => count === 0)
       .map(([id]) => id);
-    
+
     if (uncoveredStmts.length > 0) {
       content += `Uncovered statements: ${uncoveredStmts.join(', ')}\n`;
     }

@@ -117,7 +117,11 @@ function createCLI(): Command {
                   `   📊 Coverage files generated: ${result.coverageFiles.length}`
                 );
               }
-              if (!options.cleanup && result.clonedPath !== undefined && result.clonedPath !== '') {
+              if (
+                !options.cleanup &&
+                result.clonedPath !== undefined &&
+                result.clonedPath !== ''
+              ) {
                 console.log(
                   `   📂 Cloned repository preserved at: ${result.clonedPath}`
                 );
@@ -151,14 +155,22 @@ function createCLI(): Command {
               if (result.success) {
                 console.log(`✅ ${runnerType} coverage completed successfully`);
                 console.log(`   Output: ${result.outputPath}`);
-                if (result.duration !== undefined && result.duration !== null && !isNaN(result.duration)) {
+                if (
+                  result.duration !== undefined &&
+                  result.duration !== null &&
+                  !isNaN(result.duration)
+                ) {
                   console.log(`   Duration: ${result.duration}ms`);
                 }
               } else {
                 console.error(
                   `❌ ${runnerType} coverage failed (exit code: ${result.exitCode})`
                 );
-                if (result.stderr !== undefined && result.stderr !== null && result.stderr !== '') {
+                if (
+                  result.stderr !== undefined &&
+                  result.stderr !== null &&
+                  result.stderr !== ''
+                ) {
                   console.error(`   Error: ${result.stderr}`);
                 }
               }
@@ -188,13 +200,19 @@ function createCLI(): Command {
       'output directory for merged coverage',
       'coverage-merged'
     )
-    .option('--json-only', 'output only JSON format (skip LCOV) [deprecated: use --format]')
+    .option(
+      '--json-only',
+      'output only JSON format (skip LCOV) [deprecated: use --format]'
+    )
     .option(
       '--format <formats...>',
       'output formats: json, lcov, text (can specify multiple)',
       ['json', 'lcov']
     )
-    .option('--text-details', 'include detailed coverage report when using text format')
+    .option(
+      '--text-details',
+      'include detailed coverage report when using text format'
+    )
     .option(
       '--normalize-paths',
       'normalize file paths to handle different formats'
@@ -234,7 +252,9 @@ function createCLI(): Command {
             inputPatterns: options.input,
             outputDir: options.output,
             jsonOnly: options.jsonOnly ?? false,
-            ...(options.format && { format: options.format as ('json' | 'lcov' | 'text')[] }),
+            ...(options.format && {
+              format: options.format as ('json' | 'lcov' | 'text')[],
+            }),
             textDetails: options.textDetails ?? false,
             normalizePaths: options.normalizePaths ?? false,
             rootDir: options.rootDir,
@@ -245,12 +265,20 @@ function createCLI(): Command {
             console.log(`   📁 Output directory: ${result.outputDir}`);
             console.log(`   📊 Files processed: ${result.filesProcessed}`);
             console.log(`   📝 Unique files in output: ${result.uniqueFiles}`);
-            if (result.normalizedPaths !== undefined && result.normalizedPaths !== null && !isNaN(result.normalizedPaths)) {
+            if (
+              result.normalizedPaths !== undefined &&
+              result.normalizedPaths !== null &&
+              !isNaN(result.normalizedPaths)
+            ) {
               console.log(`   🔄 Paths normalized: ${result.normalizedPaths}`);
             }
           } else {
             console.error('❌ Coverage merging failed');
-            if (result.error !== undefined && result.error !== null && result.error !== '') {
+            if (
+              result.error !== undefined &&
+              result.error !== null &&
+              result.error !== ''
+            ) {
               console.error(`   Error: ${result.error}`);
             }
             process.exit(1);
