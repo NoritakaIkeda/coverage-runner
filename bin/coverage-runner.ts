@@ -18,9 +18,9 @@ function getVersion(): string {
     const packageJsonPath = join(__dirname, '..', 'package.json');
     const packageJsonContent = readFileSync(packageJsonPath, 'utf8');
     const packageJson = JSON.parse(packageJsonContent) as { version?: string };
-    return packageJson.version ?? '1.0.0';
+    return packageJson.version ?? '0.1.0-beta.1';
   } catch {
-    return '1.0.0';
+    return '0.1.0-beta.1';
   }
 }
 
