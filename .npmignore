@@ -48,6 +48,9 @@ scripts/
 .husky/
 .lint-staged
 
+# Example projects (not needed in published package)
+examples/
+
 # GitHub specific files (keep only essential ones)
 .github/
 

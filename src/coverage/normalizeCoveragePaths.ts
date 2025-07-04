@@ -32,12 +32,16 @@ export function normalizeCoveragePaths(
 
   // Process each group
   for (const [normalizedPath, originalPaths] of pathGroups) {
-    if (originalPaths.length === 1 && originalPaths[0]) {
+    if (
+      originalPaths.length === 1 &&
+      originalPaths[0] !== undefined &&
+      originalPaths[0] !== ''
+    ) {
       // Single file, just add with normalized path
       const originalFileCoverage = coverageMap.data[originalPaths[0]];
       if (!originalFileCoverage) continue;
       const actualData =
-        (originalFileCoverage as any).data || originalFileCoverage;
+        (originalFileCoverage as any).data ?? originalFileCoverage;
       const normalizedFileCoverage = { ...actualData } as any;
       normalizedFileCoverage.path = normalizedPath;
 
@@ -57,49 +61,60 @@ export function normalizeCoveragePaths(
 
       // Create individual coverage maps for each file and merge them
       const firstPath = originalPaths[0];
-      if (!firstPath) continue;
+      if (firstPath === undefined || firstPath === null || firstPath === '')
+        continue;
       const baseFileCoverage = coverageMap.data[firstPath];
       if (!baseFileCoverage) continue;
-      const baseData = (baseFileCoverage as any).data || baseFileCoverage;
+      const baseData = (baseFileCoverage as any).data ?? baseFileCoverage;
       let mergedData = { ...baseData } as any;
       mergedData.path = normalizedPath;
 
       // Merge data from other files
       for (let i = 1; i < originalPaths.length; i++) {
         const otherPath = originalPaths[i];
-        if (!otherPath) continue;
+        if (otherPath === undefined || otherPath === null || otherPath === '')
+          continue;
         const otherFileCoverage = coverageMap.data[otherPath];
         if (!otherFileCoverage) continue;
-        const otherData = (otherFileCoverage as any).data || otherFileCoverage;
+        const otherData = (otherFileCoverage as any).data ?? otherFileCoverage;
 
         // Merge statement hit counts
         for (const [statementId, hits] of Object.entries(
-          (otherData as any).s || {}
+          (otherData as any).s ?? {}
         )) {
-          if (mergedData.s && mergedData.s[statementId] !== undefined) {
+          if (
+            mergedData.s !== undefined &&
+            mergedData.s !== null &&
+            mergedData.s[statementId] !== undefined
+          ) {
             mergedData.s[statementId] += hits as number;
-          } else if (mergedData.s) {
+          } else if (mergedData.s !== undefined && mergedData.s !== null) {
             mergedData.s[statementId] = hits as number;
           }
         }
 
         // Merge function hit counts
         for (const [funcId, hits] of Object.entries(
-          (otherData as any).f || {}
+          (otherData as any).f ?? {}
         )) {
-          if (mergedData.f && mergedData.f[funcId] !== undefined) {
+          if (
+            mergedData.f !== undefined &&
+            mergedData.f !== null &&
+            mergedData.f[funcId] !== undefined
+          ) {
             mergedData.f[funcId] += hits as number;
-          } else if (mergedData.f) {
+          } else if (mergedData.f !== undefined && mergedData.f !== null) {
             mergedData.f[funcId] = hits as number;
           }
         }
 
         // Merge branch hit counts (arrays)
         for (const [branchId, branchHits] of Object.entries(
-          (otherData as any).b || {}
+          (otherData as any).b ?? {}
         )) {
           if (
-            mergedData.b?.[branchId] &&
+            mergedData.b?.[branchId] !== undefined &&
+            mergedData.b?.[branchId] !== null &&
             Array.isArray(branchHits) &&
             Array.isArray(mergedData.b[branchId])
           ) {
@@ -113,7 +128,7 @@ export function normalizeCoveragePaths(
                 existingBranch[j] = branchHit ?? 0;
               }
             }
-          } else if (mergedData.b) {
+          } else if (mergedData.b !== undefined && mergedData.b !== null) {
             mergedData.b[branchId] = branchHits;
           }
         }
@@ -143,7 +158,12 @@ function normalizePath(filePath: string, rootDir?: string): string {
   let normalizedPath = filePath;
 
   // If rootDir is provided and path is absolute, make it relative to rootDir
-  if (rootDir && path.isAbsolute(filePath)) {
+  if (
+    rootDir !== undefined &&
+    rootDir !== null &&
+    rootDir !== '' &&
+    path.isAbsolute(filePath)
+  ) {
     try {
       normalizedPath = path.relative(rootDir, filePath);
     } catch {

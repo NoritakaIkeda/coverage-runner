@@ -43,7 +43,7 @@ export class JestRunner extends BaseRunner {
       };
       return this.createFailureResult(
         this.outputDir,
-        execaError.exitCode || 1,
+        execaError.exitCode ?? 1,
         execaError.stderr,
         execaError.stdout,
         duration

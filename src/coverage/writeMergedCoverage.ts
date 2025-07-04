@@ -24,13 +24,14 @@ function isFileCoverageData(data: unknown): data is FileCoverageData {
 export interface WriteMergedCoverageOptions {
   outDir: string;
   jsonOnly?: boolean;
+  lcovOnly?: boolean;
 }
 
 export function writeMergedCoverage(
   coverageMap: CoverageMap,
   options: WriteMergedCoverageOptions
 ): void {
-  const { outDir, jsonOnly = false } = options;
+  const { outDir, jsonOnly = false, lcovOnly = false } = options;
 
   logger.debug(`Writing merged coverage to: ${outDir}`);
 
@@ -39,11 +40,13 @@ export function writeMergedCoverage(
     fs.mkdirSync(outDir, { recursive: true });
   }
 
-  // Write JSON file
-  const jsonFile = path.join(outDir, 'coverage-merged.json');
-  const jsonData = JSON.stringify(coverageMap.toJSON(), null, 2);
-  fs.writeFileSync(jsonFile, jsonData);
-  logger.debug(`Written JSON coverage: ${jsonFile}`);
+  // Write JSON file unless lcovOnly is specified
+  if (!lcovOnly) {
+    const jsonFile = path.join(outDir, 'coverage-merged.json');
+    const jsonData = JSON.stringify(coverageMap.toJSON(), null, 2);
+    fs.writeFileSync(jsonFile, jsonData);
+    logger.debug(`Written JSON coverage: ${jsonFile}`);
+  }
 
   // Write LCOV file unless jsonOnly is specified
   if (!jsonOnly) {
@@ -88,7 +91,7 @@ export function writeMergedCoverage(
 
         // Add line data
         for (const [statementId, hits] of Object.entries(
-          fileCoverage.s || {}
+          fileCoverage.s ?? {}
         )) {
           const statement = fileCoverage.statementMap?.[statementId];
           if (statement) {

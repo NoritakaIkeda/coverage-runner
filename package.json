@@ -1,6 +1,6 @@
 {
   "name": "coverage-runner",
-  "version": "1.0.0",
+  "version": "0.1.0-beta.1",
   "description": "Unified coverage analysis tool for Jest, Vitest, and other test frameworks with intelligent merging and reporting",
   "type": "module",
   "main": "dist/src/index.js",
@@ -12,8 +12,7 @@
     "dist",
     "README.md",
     "LICENSE",
-    "CONTRIBUTING.md",
-    "examples"
+    "CONTRIBUTING.md"
   ],
   "engines": {
     "node": ">=18.0.0"

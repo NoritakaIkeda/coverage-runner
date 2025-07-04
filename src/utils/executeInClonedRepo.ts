@@ -214,7 +214,12 @@ export async function executeInClonedRepo(
     };
   } finally {
     // Cleanup cloned directory if requested
-    if (cleanup && clonedPath) {
+    if (
+      cleanup &&
+      clonedPath !== undefined &&
+      clonedPath !== null &&
+      clonedPath !== ''
+    ) {
       try {
         console.log('🧹 Cleaning up cloned repository...');
         await fs.rm(clonedPath, { recursive: true, force: true });
